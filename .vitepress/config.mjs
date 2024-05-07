@@ -46,7 +46,7 @@ export default defineConfig({
       },
     ],
     footer: {
-      copyright: 'Copyright@ 2024 Albert BING'
+      copyright: '版权所有 © 2024 BING WU'
     },
     socialLinks: [
       { icon: 'github', link: 'https://github.com/BINGWU2003' },
