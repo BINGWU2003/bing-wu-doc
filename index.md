@@ -12,7 +12,7 @@ hero:
   actions:
     - theme: brand
       text: 我的简介
-      link: /doc/info
+      link: /doc/info/info
     - theme: alt
       text: 特别鸣谢vitepress
       link: https://vitepress.dev/zh/

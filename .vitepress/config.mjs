@@ -2,12 +2,13 @@
  * @Author: BINGWU
  * @Date: 2024-05-07 01:18:01
  * @LastEditors: BINGWU HuJiaCheng2003@163.com
- * @LastEditTime: 2024-05-08 00:15:24
+ * @LastEditTime: 2024-05-08 00:48:22
  * @FilePath: \bing-wu-doc\.vitepress\config.mjs
  * @Describe: 
  * @Mark: ૮(˶ᵔ ᵕ ᵔ˶)ა
  */
 import { defineConfig } from 'vitepress'
+import { set_sidebar } from './utils/set_sidebar'
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   title: "BING WU的个人文档",
@@ -18,16 +19,15 @@ export default defineConfig({
       {
         text: '前端',
         items: [
-          { text: 'nest', link: '/markdown-examples' },
-          { text: 'git', link: '/markdown-examples' },
-          { text: 'react(未来计划)', link: '/api-examples' }
+          { text: 'Nest', link: '/markdown-examples' },
+          { text: 'Git', link: '/markdown-examples' },
+          { text: 'React(未来计划)', link: '/api-examples' }
         ]
       },
       {
         text: '端游',
         items: [
-          { text: 'nest', link: '/markdown-examples' },
-          { text: 'react()', link: '/api-examples' }
+
         ]
       },
       {
@@ -35,6 +35,13 @@ export default defineConfig({
         items: [
           { text: '使命召唤手游', link: '/doc/game/codm/codm' },
           { text: '部落冲突', link: '/api-examples' }
+        ]
+      },
+      {
+        text: '其他',
+        items: [
+          { text: '公开的api', link: '/doc/utils-doc/公开的api' },
+          { text: '工具文档库', link: '/doc/utils-doc/工具文档库' }
         ]
       },
     ],
