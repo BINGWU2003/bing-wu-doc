@@ -11,7 +11,7 @@ import { defineConfig } from 'vitepress'
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   title: "BING WU的个人文档",
-  description: "A VitePress Site",
+  description: "BINGWU VitePress Site",
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [
