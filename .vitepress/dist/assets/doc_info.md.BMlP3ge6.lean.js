@@ -1,1 +1,0 @@
-import{_ as a,c as e,o as t,a4 as o}from"./chunks/framework.BDyfk2s8.js";const p=JSON.parse('{"title":"个人简介","description":"","frontmatter":{},"headers":[],"relativePath":"doc/info.md","filePath":"doc/info.md"}'),s={name:"doc/info.md"},r=o("",5),n=[r];function i(d,c,_,h,l,f){return t(),e("div",null,n)}const u=a(s,[["render",i]]);export{p as __pageData,u as default};
