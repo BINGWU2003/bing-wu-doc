@@ -2,6 +2,7 @@ node_modules
 .DS_Store
 dist-ssr
 cache
+dist
 .cache
 .temp
 *.local
