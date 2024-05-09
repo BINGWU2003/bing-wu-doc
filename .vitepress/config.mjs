@@ -41,7 +41,8 @@ export default defineConfig({
         text: '其他',
         items: [
           { text: '公开的api', link: '/doc/utils-doc/公开的api' },
-          { text: '工具文档库', link: '/doc/utils-doc/工具文档库' }
+          { text: '工具文档库', link: '/doc/utils-doc/工具文档库' },
+          { text: 'PicGo+腾讯COS搭建图床', link: '/doc/utils-doc/PicGo+腾讯COS+Typora搭建图床' }
         ]
       },
     ],
