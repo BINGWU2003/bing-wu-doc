@@ -2,13 +2,12 @@
  * @Author: BINGWU
  * @Date: 2024-05-07 01:18:01
  * @LastEditors: BINGWU HuJiaCheng2003@163.com
- * @LastEditTime: 2024-05-08 00:48:22
+ * @LastEditTime: 2024-05-11 00:14:37
  * @FilePath: \bing-wu-doc\.vitepress\config.mjs
  * @Describe: 
  * @Mark: ૮(˶ᵔ ᵕ ᵔ˶)ა
  */
 import { defineConfig } from 'vitepress'
-import { set_sidebar } from './utils/set_sidebar'
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   title: "BING WU的个人文档",
@@ -95,7 +94,14 @@ export default defineConfig({
     sidebar: false, // 关闭侧边栏
     aside: "left", // 设置右侧侧边栏在左侧显示
     outlineTitle: '文章目录',
-    outline: [2, 6]
+    outline: [2, 6],
+    lastUpdated: {
+      text: '最后更新于',
+      formatOptions: {
+        dateStyle: 'full',
+        timeStyle: 'medium'
+      }
+    }
   },
   head: [["link", { rel: "icon", href: "/logo.svg" }]],
 })

@@ -176,3 +176,7 @@
   padding-top: 24px;
   border: none;
 }
+
+.VPDocAside .content {
+  border: 0 !important;
+}
