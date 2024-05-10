@@ -1,7 +1,7 @@
 ## 腾讯储存桶COS的准备
 
-### 打开[腾讯云官网](https://cloud.tencent.com/)搜索对象存储
-
+### 打开[腾讯云官网](https://cloud.tencent.com/)
+搜索对象存储
 ![image-20240509235219394](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20240509235219394.png?imageSlim)
 
 ### 创建一个储存桶
