@@ -2,7 +2,7 @@
  * @Author: BINGWU
  * @Date: 2024-05-07 01:18:01
  * @LastEditors: BINGWU HuJiaCheng2003@163.com
- * @LastEditTime: 2024-05-11 00:14:37
+ * @LastEditTime: 2024-05-11 00:55:55
  * @FilePath: \bing-wu-doc\.vitepress\config.mjs
  * @Describe: 
  * @Mark: ૮(˶ᵔ ᵕ ᵔ˶)ა
@@ -41,7 +41,8 @@ export default defineConfig({
         items: [
           { text: '公开的api', link: '/doc/utils-doc/公开的api' },
           { text: '工具文档库', link: '/doc/utils-doc/工具文档库' },
-          { text: 'PicGo+腾讯COS搭建图床', link: '/doc/utils-doc/PicGo+腾讯COS+Typora搭建图床' }
+          { text: 'PicGo+腾讯COS+Typora搭建图床', link: '/doc/utils-doc/PicGo+腾讯COS+Typora搭建图床' },
+          { text: '使用Netlify自动化部署Vitepress', link: '/doc/utils-doc/使用Netlify自动化部署Vitepress' }
         ]
       },
     ],
