@@ -101,7 +101,8 @@ export default defineConfig({
         dateStyle: 'full',
         timeStyle: 'medium'
       }
-    }
+    },
+    returnToTopLabel:'返回顶部',
   },
   head: [["link", { rel: "icon", href: "/logo.svg" }]],
 })
