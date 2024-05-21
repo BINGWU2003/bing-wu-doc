@@ -7,3 +7,72 @@
 [uview](https://v1.uviewui.com/)
 
 [colorui](https://miren.lovemi.ren/colorui-document/)
+
+### 条件编译
+
+[官方文档](https://uniapp.dcloud.net.cn/tutorial/platform.html)
+
+以 `#ifdef` 或 `#ifndef` 加 `%PLATFORM%` 开头，以 `#endif` 结尾。
+
+#### 常用
+
+只在微信小程序下运行的代码
+
+js代码
+
+模板
+
+```js
+// #ifdef MP-WEIXIN
+需要条件编译的代码
+// #endif
+```
+
+```js
+// #ifdef MP-WEIXIN
+uni.setPageStyle({
+    style: {
+        overflow: 'visible'
+    }
+})
+// #endif
+```
+
+css代码
+
+模板
+
+```css
+/*  #ifdef  MP-WEIXIN  */
+平台特有样式
+/*  #endif  */
+```
+
+```css
+/*  #ifdef  MP-WEIXIN  */
+.wx-color {
+    color:red
+}
+/*  #endif  */
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
