@@ -19,7 +19,7 @@ export default defineConfig({
         text: '前端',
         items: [
           { text: 'Nest', link: '/markdown-examples' },
-          { text: 'Git', link: '/markdown-examples' },
+          { text: 'Git', link: '/doc/front/Git' },
           { text: 'Uniapp', link: '/doc/front/uniapp总结' },
           { text: 'React(未来计划)', link: '/api-examples' }
         ]
