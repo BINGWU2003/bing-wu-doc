@@ -56,7 +56,52 @@ css代码
 /*  #endif  */
 ```
 
+### 跨页面通信
 
+getCurrentPages()获取当前的页面栈，函数会返回一个数组，当前页面的实例就是数组的最后一项。通过$vm来获取此页的组件实例
+
+#### 场景1
+
+表单为单独的一个页面，提交表单后要返回上一页，并马上刷新上一页的数据
+
+#### 场景2
+
+页面A的展示的数据来自页面B的数据，要去页面B筛选数据，并展示到页面A中
+
+```js
+fn(){
+  let pages = getCurrentPages()
+  // 获取上一页的实例
+  let page = pages[pages.length - 2]
+  // page.$vm 上一个页面的的组件vm实例
+  // 访问data里的数据
+  page.$vm.searchText
+  // 访问methods里的方法
+  page.$vm.refresh()
+  // 返回上一级页面
+  uni.navigateBack({
+      delta: 1
+  });
+}
+
+```
+
+#### 自己刚开始用的页面通信的方法
+
+```js
+fn(){
+    //在起始页面跳转到test.vue页面并传递参数
+    let uniapp = {
+    	uniappItem: 0,
+    };
+    //当传递的参数是对象时，必须先转化为JSON格式
+    uni.navigateTo({
+    	url: 'test?id=1&name=' + JSON.stringify(uniapp),
+    });
+}
+```
+
+用的这个方法，导致页面栈中的页面堆积太多，返回的时候页面跳转出现预期之外的页面。后续分析出来感觉是自己场景没有分析对，如果填写表单的时候使用这种方法，一个用户填写好几次表单，就会导致页面栈的页面堆积太多，返回页面的时候出现预期之外的问题。
 
 
 
