@@ -42,6 +42,7 @@ export default defineConfig({
         items: [
           { text: '公开的api', link: '/doc/utils-doc/公开的api' },
           { text: '工具文档库', link: '/doc/utils-doc/工具文档库' },
+          { text: 'UI组件库', link: '/doc/utils-doc/UI组件库' },
           { text: 'PicGo+腾讯COS+Typora搭建图床', link: '/doc/utils-doc/PicGo+腾讯COS+Typora搭建图床' },
           { text: '使用Netlify自动化部署Vitepress', link: '/doc/utils-doc/使用Netlify自动化部署Vitepress' }
         ]
