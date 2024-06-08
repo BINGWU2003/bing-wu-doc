@@ -201,7 +201,7 @@ export default function Home() {
 }
 ```
 
-
+在函数中使用条件判断
 
 ```tsx
 export default function Home() {
@@ -231,3 +231,73 @@ flag为false
 
 #### 列表渲染
 
+先写的todolist再回过头来看基本语法,map在react中用的应该是非常多
+
+列表中的key用于保证元素的唯一性,类似vue的v-for中的key
+
+```tsx
+export default function Home() {
+  const list = ['吃饭', '睡觉', '看手机', '打游戏']
+  return (
+    <>
+      <ul>
+        {list.map((item) => <li key={item}>{item}</li>)}
+      </ul>
+    </>
+  )
+}
+```
+
+![image-20240608155331087](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20240608155331087.png?imageSlim)
+
+使用Fragment来包裹返回的多个根元素
+
+[Fragment介绍](https://zh-hans.react.dev/reference/react/Fragment)
+
+![image-20240608160011997](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20240608160011997.png?imageSlim)
+
+和<></>类似,Fragment里可以写key,但<></>不行
+
+```tsx
+import { Fragment } from "react"
+export default function Home() {
+  const list = ['吃饭', '睡觉', '看手机', '打游戏']
+  return (
+    <>
+      <ul>
+        {list.map((item) => (
+          // 使用Fragment包裹多级元素
+          <Fragment key={item}>
+            <li >{item}</li>
+            <li>----</li>
+          </Fragment>
+        ))}
+      </ul>
+    </>
+  )
+}
+```
+
+![image-20240608160315805](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20240608160315805.png?imageSlim)
+
+### 事件
+
+标签的属性通常使用驼峰
+
+点击事件:onClick
+
+```tsx
+"use client"
+export default function Home() {
+  const handleClick = () => {
+    alert('click')
+  }
+  return (
+    <>
+      <button onClick={handleClick}>按钮</button>
+    </>
+  )
+}
+```
+
+![image-20240608161007671](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20240608161007671.png?imageSlim)
