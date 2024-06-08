@@ -188,6 +188,21 @@ export default function Home() {
 
 #### 条件渲染
 
+使用三元表达式
+
+```tsx
+export default function Home() {
+  let flag = false
+  return (
+    <>
+      <div>{flag?'hello react':'hello vue'}</div>
+    </>
+  )
+}
+```
+
+
+
 ```tsx
 export default function Home() {
   let title = null
@@ -213,3 +228,6 @@ flag为true
 flag为false
 
 ![image-20240608153121992](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20240608153121992.png?imageSlim)
+
+#### 列表渲染
+
