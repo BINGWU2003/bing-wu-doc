@@ -146,6 +146,31 @@ export default function Home() {
 
 ![image-20240608151051949](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20240608151051949.png?imageSlim)
 
+#### TSX展开语法
+
+```tsx
+"use client"
+export default function Home() {
+  // 定义一个属性
+  const objData = {
+    style: {
+      color: "red",
+      // 带有 - 要使用驼峰
+      fontSize: '30px'
+    },
+    className: 'redText',
+  }
+  return (
+    <>
+    {/* 展开 */}
+      <div {...objData}>hello world</div>
+    </>
+  )
+}
+```
+
+![image-20240608173042333](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20240608173042333.png?imageSlim)
+
 ### 数据渲染
 
 #### 插值语法
@@ -411,3 +436,130 @@ export default function Home() {
 点击按钮新增一个数组元素4
 
 ![image-20240608164419909](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20240608164419909.png?imageSlim)
+
+## React组件通信与插槽
+
+### ReactDom组件
+
+#### 设置props属性
+
+```tsx
+"use client"
+export default function Home() {
+  const url = 'https://bing-wu-doc.netlify.app/background.svg'
+  return (
+    <>
+      <div>hello world</div>
+      {/* 在html元素上使用props */}
+      <img src={url} alt="" />
+    </>
+  )
+}
+```
+
+![image-20240608171532539](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20240608171532539.png?imageSlim)
+
+#### 设置className属性
+
+```tsx
+"use client"
+export default function Home() {
+  return (
+    <>
+      <div className="redText">hello world</div>
+    </>
+  )
+}
+```
+
+![image-20240608171817494](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20240608171817494.png?imageSlim)
+
+#### 设置style属性
+
+带有 - 要使用驼峰
+
+```tsx
+"use client"
+export default function Home() {
+  // 设置样式
+  const titleStyle = {
+    color: "red",
+    // 带有 - 要使用驼峰
+    fontSize: '30px'
+  }
+  return (
+    <>
+    {/* style */}
+      <div style={titleStyle}>hello world</div>
+    </>
+  )
+}
+```
+
+### React组件
+
+#### 创建一个React组件
+
+```tsx
+export default function MyApp() {
+  return (
+    <div>myapp组件</div>
+  )
+}
+```
+
+![image-20240608173330134](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20240608173330134.png?imageSlim)
+
+导入react组件并使用
+
+![image-20240608173427392](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20240608173427392.png?imageSlim)
+
+![image-20240608173438293](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20240608173438293.png?imageSlim)
+
+#### 设置props属性
+
+MyApp组件
+
+```tsx
+
+interface MyAppProps {
+  content: string;
+  sayHello: () => void;
+  active: boolean;
+}
+
+export default function MyApp({ content, sayHello, active }: MyAppProps) {
+
+  return (
+    <>
+      <div>myapp组件</div>
+      <div>{content}</div>
+      <button onClick={sayHello}>按钮</button>
+      <div>{active ? '激活' : '未激活'}</div>
+      <div>------</div>
+    </>
+  )
+}
+```
+
+pages组件
+
+active未设置值,默认为true
+
+```tsx
+"use client"
+import MyApp from "./MyApp"
+export default function Home() {
+  const sayHello = ()=>{
+    alert('hello')
+  }
+  return (
+    <>
+      <div>hello world</div>
+      <MyApp content={'内容1'} sayHello={sayHello} active></MyApp>
+    </>
+  )
+}
+```
+
+![image-20240608174709186](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20240608174709186.png?imageSlim)
