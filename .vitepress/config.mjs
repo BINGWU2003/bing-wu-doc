@@ -21,7 +21,7 @@ export default defineConfig({
           { text: 'Nest', link: '/markdown-examples' },
           { text: 'Git', link: '/doc/front/Git' },
           { text: 'Uniapp', link: '/doc/front/uniapp总结' },
-          { text: 'React(未来计划)', link: '/api-examples/front/React' }
+          { text: 'React(未来计划)', link: '/doc/front/React' }
         ]
       },
       {
