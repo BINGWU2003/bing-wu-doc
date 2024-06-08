@@ -280,7 +280,7 @@ export default function Home() {
 
 ![image-20240608160315805](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20240608160315805.png?imageSlim)
 
-### 事件
+### 事件处理
 
 标签的属性通常使用驼峰
 
@@ -301,3 +301,113 @@ export default function Home() {
 ```
 
 ![image-20240608161007671](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20240608161007671.png?imageSlim)
+
+### 状态处理
+
+#### useState
+
+[useState文档](https://zh-hans.react.dev/reference/react/useState)
+
+```ts
+const [state, setState] = useState(initialState)
+```
+
+initialState为初始值
+
+state为数据
+
+setState用于修改state的函数
+
+```tsx
+"use client"
+// 导入useState
+import { useState } from "react"
+export default function Home() {
+  // 使用useState
+  const [title,setTitle] = useState<string>('标题x')
+  const handleClick = () => {
+    setTitle('标题a')
+  }
+  return (
+    <>
+    <h1>{title}</h1>
+      <button onClick={handleClick}>按钮</button>
+    </>
+  )
+}
+```
+
+点击按钮修改title
+
+![image-20240608162106627](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20240608162106627.png?imageSlim)
+
+##### 修改对象的技巧
+
+先展开旧的对象,再覆盖旧的属性值
+
+```tsx
+"use client"
+import { useState } from "react"
+interface Content {
+  title: string;
+  name: string;
+}
+export default function Home() {
+
+  const [content, setContent] = useState<Content>({
+    title: '标题1',
+    name: '吃饭'
+  })
+  const handleClick = () => {
+    // 修改对象的某个属性
+    setContent({
+      // 先展开对象
+      ...content,
+      // 新的属性值会覆盖旧的属性值
+      name: '睡觉'
+    })
+  }
+  return (
+    <>
+      <h1>{content.name}</h1>
+      <button onClick={handleClick}>按钮</button>
+    </>
+  )
+}
+```
+
+点击按钮
+
+![image-20240608163447953](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20240608163447953.png?imageSlim)
+
+##### 修改数组的技巧
+
+vue中可以使用push,pop直接修改数组,react中有点小麻烦
+
+先展开数组,再添加一个新的元素
+
+```tsx
+"use client"
+import { useState } from "react"
+
+export default function Home() {
+
+  const [list, setList] = useState([1, 2, 3])
+  const handleClick = () => {
+    // 先展开数组,再添加一个新的元素
+    setList([...list, 4])
+  }
+  return (
+    <>
+      <ul>
+        {list.map((item) => <li key={item}>{item}</li>)}
+      </ul>
+      <button onClick={handleClick}>按钮</button>
+    </>
+  )
+}
+```
+
+点击按钮新增一个数组元素4
+
+![image-20240608164419909](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20240608164419909.png?imageSlim)
