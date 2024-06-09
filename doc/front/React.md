@@ -792,7 +792,7 @@ export default function MyApp({ getData }: any) {
 
 组件嵌套层数很多,4-5层以上的时候
 
-感觉不出来有什么意思,待考量
+如果是多文件组件,感觉不出来有什么用,待考量
 
 ```tsx
 "use client"
