@@ -518,6 +518,8 @@ export default function MyApp() {
 
 #### 设置props属性
 
+##### 父传子
+
 MyApp组件
 
 ```tsx
@@ -563,3 +565,259 @@ export default function Home() {
 ```
 
 ![image-20240608174709186](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20240608174709186.png?imageSlim)
+
+##### 父传子再传孙
+
+page组件
+
+```tsx
+"use client"
+import MyApp from "./MyApp"
+export default function Home() {
+  const data = {
+    content: "我要吃饭",
+    childData: {
+      title: '今天天气好',
+      date: "2077-9-1"
+    }
+  }
+  return (
+    <>
+      <div>hello world</div>
+      {/* 展开data */}
+      <MyApp  {...data}></MyApp>
+    </>
+  )
+}
+```
+
+MyApp组件
+
+```tsx
+import MyChild from "./MyChild";
+interface MyAppProps {
+  content: string;
+  childData: {
+    title: string;
+    date: string;
+  }
+}
+
+export default function MyApp({ content, childData }: MyAppProps) {
+
+  return (
+    <>
+      <div>myapp组件</div>
+      <div>{content}</div>
+      {/* 展开要传入到孙组件的数据 */}
+      <MyChild {...childData}></MyChild>
+    </>
+  )
+}
+```
+
+MyChild组件
+
+创建一个MyChild组件
+
+![image-20240609135440876](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20240609135440876.png?imageSlim)
+
+填入以下代码
+
+```tsx
+
+interface MyChildProps {
+  title: string;
+  date: string;
+}
+export default function MyChild({ title, date }: MyChildProps) {
+  return (
+    <>
+      <div>mychild组件</div>
+      <div>{title}</div>
+      <div>{date}</div>
+    </>
+  )
+}
+```
+
+页面中展示的效果
+
+![image-20240609140008373](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20240609140008373.png?imageSlim)
+
+#### 插槽
+
+##### 普通传参
+
+myapp组件
+
+```tsx
+// 使用默认的属性children获取传入过来的html元素
+export default function MyApp({ children }: any) {
+  return (
+    <>
+      <div>myapp组件</div>
+      <div>
+        {/* 使用 */}
+        {children}
+      </div>
+    </>
+  )
+}
+```
+
+page组件
+
+```tsx
+"use client"
+import MyApp from "./MyApp"
+export default function Home() {
+  return (
+    <>
+      <div>hello world</div>
+      <MyApp>
+        {/* 往myapp组件传入的html元素 */}
+        <div>1</div>
+        <div>1</div>
+        <div>1</div>
+      </MyApp>
+    </>
+  )
+}
+```
+
+![image-20240609140450757](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20240609140450757.png?imageSlim)
+
+##### 向多个位置传递
+
+page组件
+
+```tsx
+"use client"
+import MyApp from "./MyApp"
+export default function Home() {
+  return (
+    <>
+      <div>hello world</div>
+      <MyApp content={'吃饭吃饭吃饭'} title={'天气好好'}>
+        {/* 往myapp组件传入的html元素 */}
+        <div>1</div>
+        <div>1</div>
+        <div>1</div>
+      </MyApp>
+      {/* 不传title */}
+      <MyApp content={'睡觉睡觉睡觉'}>
+        <div>1</div>
+        <div>2</div>
+        <div>3</div>
+      </MyApp>
+    </>
+  )
+}
+
+```
+
+myapp组件
+
+```tsx
+// props的属性设置默认值表示可选的
+// title可选
+export default function MyApp({ children, content, title = '默认标题' }: any) {
+  return (
+    <>
+      <div>myapp组件</div>
+      <div>
+        {/* 使用 */}
+        {children}
+      </div>
+      <div>{title}</div>
+      <div>{content}</div>
+    </>
+  )
+}
+```
+
+![image-20240609141308597](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20240609141308597.png?imageSlim)
+
+#### 子传父
+
+有点像vue的emits
+
+page组件
+
+```tsx
+"use client"
+import MyApp from "./MyApp"
+export default function Home() {
+  // 传入到myapp组件的函数
+  const getData = (data: string) => {
+    console.log('data', data);
+  }
+  return (
+    <>
+      <div>hello world</div>
+      {/* 传入函数 */}
+      <MyApp getData={getData}>
+      </MyApp>
+    </>
+  )
+}
+```
+
+myapp组件
+
+```tsx
+import { useState } from "react"
+
+export default function MyApp({ getData }: any) {
+  const [name] = useState('小李')
+  return (
+    <>
+      <div>myapp组件</div>
+      <div>{name}</div>
+      {/* myapp组件触发page组件传入过来的函数 */}
+      <button onClick={(e) => getData(name)}>按钮</button>
+    </>
+  )
+}
+```
+
+获取到myapp组件的数据
+
+![image-20240609142742492](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20240609142742492.png?imageSlim)
+
+#### 多层组件传参
+
+[createContext](https://react.docschina.org/reference/react/createContext#createcontext)
+
+组件嵌套层数很多,4-5层以上的时候
+
+感觉不出来有什么意思,待考量
+
+```tsx
+"use client"
+// 导入
+import { createContext, useContext } from "react"
+// 创建一个context
+const DataContext = createContext('今天吃饭了吗')
+function MyChild() {
+    // 使用context
+  const data = useContext(DataContext)
+  return (
+    <>
+      <div>my-child</div>
+      <div>{data}</div>
+    </>
+  )
+}
+
+export default function Home() {
+  return (
+    <>
+      <div>hello world</div>
+      <MyChild></MyChild>
+    </>
+  )
+}
+```
+
