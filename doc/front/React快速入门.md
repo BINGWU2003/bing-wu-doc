@@ -827,3 +827,41 @@ export default function Home() {
 
 ##### 方式二
 
+使用Consumer和Provider
+
+```tsx
+"use client"
+import { createContext, useState } from "react"
+// 创建一个context
+const DataContext = createContext('')
+function MyChild() {
+  return (
+    <>
+      <div>MyChild组件</div>
+      <DataContext.Consumer>
+        {/* 使用插值语法 */}
+        {
+          // 包裹一个函数  函数第一个参数是Provider传入过来的数据
+          (value) => <div>{value}</div>
+        }
+      </DataContext.Consumer>
+    </>
+  )
+}
+
+
+export default function Home() {
+  const [data] = useState<string>('今天吃了面')
+  return (
+    <>
+      <div>hello world</div>
+      {/* 要传递过去的数据 */}
+      <DataContext.Provider value={data}>
+        <MyChild> </MyChild>
+      </DataContext.Provider>
+    </>
+  )
+}
+
+```
+
