@@ -865,3 +865,146 @@ export default function Home() {
 
 ```
 
+## ReactHooks速成
+
+### useReducer
+
+[useReducer官方文档](https://zh-hans.react.dev/reference/react/useReducer)
+
+统一管理状态的操作方式
+
+```tsx
+"use client"
+
+import { useReducer } from "react"
+
+interface action {
+  type: string
+}
+// 创建一个函数
+const countReducer = (state: number, { type }: action) => {
+  if (type === 'increment') {
+    return state + 1
+  } else if (type === 'decrement') {
+    return state - 1
+  } else {
+    return state
+  }
+}
+
+export default function Home() {
+  // 第一个参数为更新state的函数,第二参数为state的初始值
+  const [count, dispatch] = useReducer(countReducer, 0)
+  return (
+    <>
+      <div>hello world</div>
+      <div>{count}</div>
+      <button onClick={e => dispatch({ type: 'increment' })}>+</button>
+      <button onClick={e => dispatch({ type: 'decrement' })}>-</button>
+    </>
+  )
+}
+```
+
+![image-20240610231557565](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20240610231557565.png?imageSlim)
+
+### useRef
+
+[useRef官方文档](https://zh-hans.react.dev/reference/react/useRef)
+
+#### 用于记录上次状态更新的值
+
+```tsx
+"use client"
+import { useRef,useState } from "react"
+export default function Home() {
+  const [count, setCount] = useState(0)
+  // 参数为默认值
+  const preCount = useRef(-1)
+  const handleClick = () => {
+    preCount.current = count
+    setCount(count + 1)
+  }
+  return (
+    <>
+      <div>hello world</div>
+      <div>当前的count{count}</div>
+      <div>上一次的count{preCount.current}</div>
+      <button onClick={handleClick}>count++</button>
+    </>
+  )
+}
+```
+
+![image-20240610232925258](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20240610232925258.png?imageSlim)
+
+#### 用于获取dom对象
+
+获取普通的html元素
+
+```tsx
+"use client"
+import { useRef} from "react"
+export default function Home() {
+  const divRef = useRef(null)
+  const handleClick = () => {
+    console.log('dom',divRef.current.innerHTML);
+    
+  }
+  return (
+    <>
+      <div>hello world</div>
+      <div ref={divRef}>div标签</div>
+      <button onClick={handleClick}>get</button>
+    </>
+  )
+}
+```
+
+![image-20240610233422775](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20240610233422775.png?imageSlim)
+
+### forwardRef&useImperativeHandle
+
+[forwardRef官方文档](https://zh-hans.react.dev/reference/react/forwardRef)
+
+`forwardRef` 允许组件使用 [ref](https://zh-hans.react.dev/learn/manipulating-the-dom-with-refs) 将 DOM 节点暴露给父组件。
+
+[useImperativeHandle官方文档](https://zh-hans.react.dev/reference/react/useImperativeHandle)
+
+`useImperativeHandle` 是 React 中的一个 Hook，它能让你自定义由 [ref](https://zh-hans.react.dev/learn/manipulating-the-dom-with-refs) 暴露出来的句柄。
+
+```tsx
+"use client"
+import { useRef, forwardRef, useImperativeHandle } from "react"
+// 要暴露出去的组件
+const MyChild = forwardRef((props, ref) => {
+  useImperativeHandle(ref, () => {
+    return {
+      // 要暴露出去的方法
+      showHello() {
+        console.log('hello world')
+      }
+    }
+  })
+  return <div>mychild组件</div>
+})
+// 设置显示名称
+MyChild.displayName = 'MyChild';
+export default function Home() {
+  const myChildRef = useRef(null)
+  const handleClick = () => {
+    myChildRef.current.showHello()
+  }
+  return (
+    <>
+      <div>hello world</div>
+      <MyChild ref={myChildRef}></MyChild>
+      <button onClick={handleClick}>get</button>
+    </>
+  )
+}
+```
+
+输出hello world
+
+![image-20240610235028628](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20240610235028628.png?imageSlim)
