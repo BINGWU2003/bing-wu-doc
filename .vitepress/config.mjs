@@ -20,21 +20,19 @@ export default defineConfig({
         items: [
           { text: 'Nest', link: '/markdown-examples' },
           { text: 'Git', link: '/doc/front/Git' },
-          { text: 'Uniapp', link: '/doc/front/uniapp总结' },
-          { text: 'React(未来计划)', link: '/doc/front/React' }
+          { text: 'Uniapp', link: '/doc/front/uniapp总结' }
         ]
       },
       {
-        text: '端游',
+        text: 'React',
         items: [
-
+          { text: 'React快速入门', link: '/doc/front/React快速入门' }
         ]
       },
       {
         text: '手游',
         items: [
           { text: '使命召唤手游', link: '/doc/game/codm/codm' },
-          { text: '部落冲突', link: '/api-examples' }
         ]
       },
       {

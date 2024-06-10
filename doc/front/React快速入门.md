@@ -794,6 +794,8 @@ export default function MyApp({ getData }: any) {
 
 如果是多文件组件,感觉不出来有什么用,待考量
 
+##### 方式一
+
 ```tsx
 "use client"
 // 导入
@@ -820,4 +822,8 @@ export default function Home() {
   )
 }
 ```
+
+![image-20240609150940032](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20240609150940032.png?imageSlim)
+
+##### 方式二
 
