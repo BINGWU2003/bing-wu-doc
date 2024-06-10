@@ -2,7 +2,7 @@
  * @Author: BINGWU
  * @Date: 2024-05-07 01:18:01
  * @LastEditors: BINGWU HuJiaCheng2003@163.com
- * @LastEditTime: 2024-05-14 00:57:08
+ * @LastEditTime: 2024-06-11 00:04:55
  * @FilePath: \bing-wu-doc\.vitepress\config.mjs
  * @Describe: 
  * @Mark: ૮(˶ᵔ ᵕ ᵔ˶)ა
@@ -26,7 +26,13 @@ export default defineConfig({
       {
         text: 'React',
         items: [
-          { text: 'React快速入门', link: '/doc/front/React快速入门' }
+          { text: 'React快速入门', link: '/doc/React/React快速入门' }
+        ]
+      },
+      {
+        text: 'React项目',
+        items: [
+          { text: 'TwitchClone', link: '/doc/React项目/TwitchClone' }
         ]
       },
       {
