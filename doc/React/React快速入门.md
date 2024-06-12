@@ -1008,3 +1008,105 @@ export default function Home() {
 输出hello world
 
 ![image-20240610235028628](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20240610235028628.png?imageSlim)
+
+### useEffect
+
+[useEffect文档](https://react.docschina.org/reference/react/useEffect)
+
+类似vue中的watch
+
+依赖的数据发生变化,useEffect函数就会执行
+
+```tsx
+"use client"
+import { useEffect, useState } from "react"
+export default function Home() {
+  const [num, setNum] = useState(0)
+  // num为要依赖的数据
+  useEffect(() => {
+    console.log("useEffect")
+  }, [num])
+
+  return (
+    <>
+      <div>hello world</div>
+      {/* num变化,执行useEffect */}
+      <button onClick={() => setNum(num + 1)}>++</button>
+    </>
+  )
+}
+```
+
+![image-20240611164938924](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20240611164938924.png?imageSlim)
+
+### useMemo
+
+[useMemo官方文档](https://react.docschina.org/reference/react/useMemo)
+
+父组件的重新渲染会引起子组件的重新渲染
+
+```tsx
+"use client"
+import { useState } from "react"
+
+const MyChild = () => {
+  console.log("MyChild组件渲染了")
+  return (
+    <div>MyChild组件</div>
+  )
+}
+
+export default function Home() {
+  const [num, setNum] = useState(0)
+  return (
+    <>
+      <div>hello world</div>
+      <MyChild />
+      <button onClick={() => setNum(num + 1)}>++</button>
+    </>
+  )
+}
+```
+
+![image-20240611165733337](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20240611165733337.png?imageSlim)
+
+只有name变化才会重新渲染子组件(!!!)
+
+```tsx
+"use client"
+import { useState, useMemo } from "react"
+
+// 子组件获取父组件传递过来的name
+const MyChild = ({ name }) => {
+  // 让name变更的时候重新渲染子组件
+  const memoName = useMemo(() => {
+    console.log("MyChild组件渲染了")
+    const newName = name + '123'
+    return newName
+  }, [name])
+  return (
+    <>
+      <div>MyChild组件</div>
+      <div>{name}</div>
+      <div>{memoName}</div>
+    </>
+
+  )
+}
+
+export default function Home() {
+  const [num, setNum] = useState(0)
+  const [name, setName] = useState("")
+  return (
+    <>
+      <div>hello world</div>
+
+      <MyChild name={name} />
+      <div>{num}</div>
+      <button onClick={() => setNum(num + 1)}>++</button>
+      <button onClick={() => setName("name" + name)}>name</button>
+    </>
+  )
+}
+```
+
