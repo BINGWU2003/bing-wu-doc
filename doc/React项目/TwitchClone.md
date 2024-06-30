@@ -4,13 +4,13 @@
 
 ### 工具
 
-[Clrek](https://clerk.com/)
+[Clrek](https://clerk.com/):搭建账号系统
 
 [ClrekDoc](https://clerk.com/docs)
 
 [Ngrok](https://ngrok.com/download)
 
-[Prisma](https://www.prisma.io/)
+[Prisma](https://www.prisma.io/):用于连接数据库
 
 组件库:[shadcn](https://ui.shadcn.com/)
 
@@ -205,7 +205,7 @@ npx prisma db pull
 
 新增了一个test的model
 
-在网页端操作数据库
+#### 在网页端操作数据库
 
 ```bash
 npx prisma studio
