@@ -218,3 +218,179 @@ npx prisma studio
 访问地址就能直接操作数据库了,像一个小型navicat
 
 ![image-20240629171946671](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20240629171946671.png?imageSlim)
+
+### 搭建navbar
+
+#### 代码文件路径
+
+![image-20240630171747130](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20240630171747130.png?imageSlim)
+
+#### index.tsx
+
+```tsx
+import { Logo } from "./logo"
+import { Search } from "./search"
+import { Actions } from "./actions"
+export default function Navbar() {
+  return (
+    <>
+      <div className="flex items-center bg-[#252630] justify-between px-6">
+        <Logo></Logo>
+        <Search></Search>
+        <Actions></Actions>
+      </div>
+    </>
+  )
+}
+```
+
+#### actions.tsx
+
+```tsx
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { currentUser } from "@clerk/nextjs/server"
+import { UserButton } from "@clerk/nextjs";
+import { SignInButton } from "@clerk/nextjs";
+import { Clapperboard } from "lucide-react";
+export const Actions = async () => {
+  const user = await currentUser();
+  return (
+    <>
+      <div>
+        {
+          !user && (
+            <Button>
+              <SignInButton></SignInButton>
+            </Button>
+          )
+        }
+        {
+          user && (
+            <div className="flex items-center">
+              <Link href={`/u/${user.username}`}>
+                <div className="flex items-center">
+                  <Clapperboard></Clapperboard>
+                  <div className="ml-2 text-sm">控制面板</div>
+                </div>
+              </Link>
+              <div className="ml-6 flex items-center">
+                <UserButton></UserButton>
+              </div>
+            </div>
+          )
+        }
+      </div>
+    </>
+  )
+}
+```
+
+#### logo.tsx
+
+```tsx
+import Image from "next/image"
+// 用于跳转
+import Link from "next/link"
+export const Logo = () => {
+  return (
+    <>
+      {/* 点击logo跳转到首页 */}
+      <Link href='/'>
+        <div className="flex h-20 items-center">
+          <Image src='/CloneTwitch.svg' alt="CloneTwitch" width={50} height={50}></Image>
+          <div className="ml-4">
+            <p className="text-2xl font-bold">Clone Twitch</p>
+            <p className="text-sm text-[#737481]">欢迎来到本站~</p>
+          </div>
+        </div>
+      </Link>
+    </>
+  )
+}
+```
+
+#### search.tsx
+
+此组件为客户端组件
+
+使用**"use client";**声明为客户端组件
+
+```tsx
+"use client";
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { SearchIcon } from "lucide-react"
+import { useState } from "react"
+import { useRouter } from "next/navigation";
+export const Search = () => {
+  const router = useRouter()
+  const [inputValue, setInputValue] = useState<string>('')
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!inputValue) {
+      return
+    } else {
+      router.push(`/search?keyword=${inputValue}`)
+      setInputValue('')
+    }
+  }
+  return (
+    <>
+      <form className="flex items-center" onSubmit={handleSubmit}>
+        <Input type="text" value={inputValue} onChange={(e) => setInputValue(e.target.value)} placeholder="请输入内容" className="bg-[#1f2029] w-96 " />
+        <Button type="submit" variant="secondary" className="bg-[#252630] hover:bg-transparent ml-2">
+          <SearchIcon className="color-[#252630]"/>
+        </Button>
+      </form>
+    </>
+  )
+}
+```
+
+### 部署应用
+
+使用[netlify](https://www.netlify.app/)自动化部署应用
+
+#### 项目配置
+
+在package.json文件的scripts对象中新增一行命令
+
+用于生成prisma的数据库配置文件
+
+```
+"postinstall": "prisma generate"
+```
+
+![image-20240714003911157](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20240714003911157.png?imageSlim)
+
+#### 开始部署
+
+打开netlify登陆并前往首页
+
+1.选择导入项目
+
+2.导入已存在的项目(选择GitHub,登陆并授权,再中选择自己的项目)
+
+![image-20240714003722490](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20240714003722490.png?imageSlim)
+
+配置站点名称
+
+![image-20240714004152642](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20240714004152642.png?imageSlim)
+
+配置环境变量
+
+![image-20240714004227657](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20240714004227657.png?imageSlim)
+
+环境变量的数据来自**.env**文件
+
+- **DATABASE_URL**相对于key
+- **=**右边的内容相当于value
+
+![image-20240714004327651](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20240714004327651.png?imageSlim)
+
+配置完环境变量后点击Deploy按钮开始部署
+
+部署成功之后就可以访问站点了
+
+![image-20240714004628855](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20240714004628855.png?imageSlim)
