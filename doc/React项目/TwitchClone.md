@@ -2,15 +2,17 @@
 
 源码:[GitHub地址](https://github.com/BINGWU2003/twitch-clone.git)
 
+线上地址:[地址](https://bing-wu-twicth.netlify.app/)
+
 ### 工具
 
-[Clrek](https://clerk.com/):搭建账号系统
+[Clrek](https://clerk.com/):搭建账号系统和权限
 
 [ClrekDoc](https://clerk.com/docs)
 
 [Ngrok](https://ngrok.com/download)
 
-[Prisma](https://www.prisma.io/):用于连接数据库
+[Prisma](https://www.prisma.io/):用于连接和操作数据库
 
 组件库:[shadcn](https://ui.shadcn.com/)
 
