@@ -2,7 +2,7 @@
  * @Author: BINGWU
  * @Date: 2024-05-07 01:18:01
  * @LastEditors: hujiacheng hujiacheng@iipcloud.com
- * @LastEditTime: 2024-06-30 15:07:14
+ * @LastEditTime: 2024-07-24 23:36:08
  * @FilePath: \bing-wu-doc\.vitepress\config.mjs
  * @Describe: 
  * @Mark: ૮(˶ᵔ ᵕ ᵔ˶)ა
@@ -38,6 +38,7 @@ export default defineConfig({
       {
         text: '其他',
         items: [
+          { text: 'React和Vue生态库', link: '/doc/utils-doc/React和Vue生态库' },
           { text: '公开的api', link: '/doc/utils-doc/公开的api' },
           { text: '工具文档库', link: '/doc/utils-doc/工具文档库' },
           { text: 'UI组件库', link: '/doc/utils-doc/UI组件库' },
