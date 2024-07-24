@@ -12,7 +12,7 @@
 
 ## 样式
 
-css modules
+react:css modules
 
-scoped
+vue:scoped + style
 
