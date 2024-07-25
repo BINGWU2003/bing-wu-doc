@@ -12,7 +12,9 @@
 
 ## 样式
 
-react:css modules
+- css modules
+- [styled-components](https://styled-components.nodejs.cn/)
+- [单文件组件 CSS 功能 | Vue.js (vuejs.org)](https://cn.vuejs.org/api/sfc-css-features.html)
 
-vue:scoped + style
+
 

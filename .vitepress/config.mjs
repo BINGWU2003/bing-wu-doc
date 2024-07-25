@@ -32,7 +32,8 @@ export default defineConfig({
       {
         text: 'React项目',
         items: [
-          { text: 'TwitchClone', link: '/doc/React项目/TwitchClone' }
+          { text: 'TwitchClone', link: '/doc/React项目/TwitchClone' },
+          { text: 'TwitchCloneVite', link: '/doc/React项目/TwitchCloneVite' }
         ]
       },
       {
