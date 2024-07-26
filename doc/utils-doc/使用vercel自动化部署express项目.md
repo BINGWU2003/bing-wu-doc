@@ -152,7 +152,7 @@ Thumbs.db
 
   ![image-20240726164736979](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20240726164736979.png?imageSlim)
 
-  访问http://localhost:3000/出现以下内容代表服务器运行成功
+  访问`http://localhost:3000/`出现以下内容代表服务器运行成功
 
   ![image-20240726164828622](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20240726164828622.png?imageSlim)
 
