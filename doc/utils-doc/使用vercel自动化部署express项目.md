@@ -324,7 +324,7 @@ item表
 
 ### 新增一条item
 
-url:http://localhost:3000/items
+url:`http://localhost:3000/items`
 
 请求方式:post
 
@@ -348,7 +348,7 @@ url:http://localhost:3000/items
 
 ### 获取所有的item
 
-url:http://localhost:3000/items
+url:`http://localhost:3000/items`
 
 请求方式:get
 
@@ -360,7 +360,7 @@ url:http://localhost:3000/items
 
 ### 删除一条item
 
-url:http://localhost:3000/items/1
+url:`http://localhost:3000/items/1`
 
 url里的1为id
 
@@ -372,7 +372,7 @@ url里的1为id
 
 ### 获取一条item
 
-url:http://localhost:3000/items/2
+url:`http://localhost:3000/items/2`
 
 url里的2为id
 
@@ -384,7 +384,7 @@ url里的2为id
 
 ### 更新一条item
 
-url:http://localhost:3000/items/2
+url:`http://localhost:3000/items/2`
 
 url里的2为id
 
