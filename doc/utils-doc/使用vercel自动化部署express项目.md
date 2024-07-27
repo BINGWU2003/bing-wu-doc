@@ -468,7 +468,7 @@ url里的2为id
 
 ![image-20240726183336976](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20240726183336976.png?imageSlim)
 
-访问:https://my-express-app-8pqf.vercel.app/items
+访问:https://my-express-app-teal.vercel.app/items
 
 返回数据库里的item
 
