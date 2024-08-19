@@ -2,7 +2,7 @@
  * @Author: BINGWU
  * @Date: 2024-05-07 01:18:01
  * @LastEditors: hujiacheng hujiacheng@iipcloud.com
- * @LastEditTime: 2024-07-24 23:36:08
+ * @LastEditTime: 2024-08-19 13:55:13
  * @FilePath: \bing-wu-doc\.vitepress\config.mjs
  * @Describe: 
  * @Mark: ૮(˶ᵔ ᵕ ᵔ˶)ა
@@ -18,9 +18,8 @@ export default defineConfig({
       {
         text: '前端',
         items: [
-          { text: 'Nest', link: '/markdown-examples' },
           { text: 'Git', link: '/doc/front/Git' },
-          { text: 'Uniapp', link: '/doc/front/uniapp总结' }
+          // { text: 'Uniapp', link: '/doc/front/uniapp总结' }
         ]
       },
       {
@@ -45,7 +44,8 @@ export default defineConfig({
           { text: 'UI组件库', link: '/doc/utils-doc/UI组件库' },
           { text: 'PicGo+腾讯COS+Typora搭建图床', link: '/doc/utils-doc/PicGo+腾讯COS+Typora搭建图床' },
           { text: '使用Netlify自动化部署Vitepress', link: '/doc/utils-doc/使用Netlify自动化部署Vitepress' },
-          { text: '使用vercel自动化部署express项目', link: '/doc/utils-doc/使用vercel自动化部署express项目' }
+          { text: '使用vercel自动化部署express项目', link: '/doc/utils-doc/使用vercel自动化部署express项目' },
+          {text: 'Electron+Vue3的远程打印项目', link: '/doc/utils-doc/Electron+Vue3的远程打印项目'},
         ]
       },
     ],
