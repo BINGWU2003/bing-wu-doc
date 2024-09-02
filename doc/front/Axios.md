@@ -111,3 +111,121 @@ pnpm install axios-retry
 ```
 
 ### 取消请求
+
+[官方文档教程](https://www.axios-http.cn/docs/cancellation)
+
+流程图
+
+<img src="https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20240903023926458.png?imageSlim" alt="image-20240903023926458" style="zoom:50%;" />
+
+基本步骤
+
+- 通过`axios.CancelToken.source()`方法生成`source`
+
+- 给请求添加配置项`cancelToken`,值为`source.token`,此时的请求相当于和`source`绑定
+
+- 通过`source.cancel('取消请求的原因')`取消请求
+
+  注意:
+
+  1.想取消哪个请求就必须调用哪个请求的`source.cancel()`方法
+
+  2.每个请求的cancelToken的位置不一样(具体看[文档](https://www.axios-http.cn/docs/cancellation))
+
+  - get
+
+    ```js
+    axios.get('xxx', {
+      cancelToken: source.token
+    })
+    ```
+
+   - post
+  
+     ```js
+     axios.post('xxx', {
+       name:'xxx'
+     },{
+       ancelToken: source.token
+     })
+     ```
+  
+   - put
+  
+     ```js
+     axios.put('xxx', {
+       name:'xxx'
+     },{
+       ancelToken: source.token
+     })
+     ```
+  
+   - delete
+  
+     ```js
+     axios.get('xxx', {
+       cancelToken: source.token
+     })
+     ```
+  
+     
+
+代码实践(get请求)
+
+- 接口函数
+
+```js
+import http from '@/utils/http'
+const getMovieService = async (params, cancelToken) => {
+// http为axios实例
+  return http.get('/getMovie', {
+    params,
+    ...(cancelToken ? { cancelToken } : {})
+  })
+}
+```
+
+- 简单使用
+
+  模拟搜索,当用户多次点击搜索按钮,如果之前搜索的请求还没有请求成功,则取消上次的搜索
+
+  ```js
+  // 导入接口函数
+  import { getMovieService } from '@/api/movie'
+  import axios from 'axios'
+  
+  // 考虑到可能有多个不同的请求,因此使用key-value的形式来储存请求的source
+  // key->'哪个请求'  value->'source'
+  const cancelTokens = {
+    getTableDataRequest: null
+  }
+  
+  const handleSearch = async () => {
+    // getTableDataRequest有值,请求还没有请求完毕
+    if (cancelTokens.getTableDataRequest) {
+      cancelTokens.getTableDataRequest.cancel('取消请求')
+      cancelTokens.getTableDataRequest = null
+    }
+    const movieName = inputValue.value
+    const { pageSize, currentPage } = baseTableComRef.value.getPaginationData()
+    const pageIndex = currentPage
+    // 创建source
+    const source = axios.CancelToken.source()
+    // 储存改请求的source
+    cancelTokens.getTableDataRequest = source
+    // source.token作为cancelToken传入函数
+    getTableData({ pageSize, pageIndex, movieName }, source.token)
+  }
+  
+  // 把接口函数getMovieService重新封装了一次
+  const getTableData = async (params, cancelToken) => {
+    await getMovieService(params, cancelToken)
+      .then((res) => {
+       cancelTokens.getTableDataRequest = null
+    }).catch((err) => {
+        console.log('err', err)
+      })
+  }
+  ```
+  
+  
