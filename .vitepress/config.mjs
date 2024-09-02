@@ -2,7 +2,7 @@
  * @Author: BINGWU
  * @Date: 2024-05-07 01:18:01
  * @LastEditors: hujiacheng hujiacheng@iipcloud.com
- * @LastEditTime: 2024-08-19 13:55:13
+ * @LastEditTime: 2024-09-02 17:34:37
  * @FilePath: \bing-wu-doc\.vitepress\config.mjs
  * @Describe: 
  * @Mark: ૮(˶ᵔ ᵕ ᵔ˶)ა
@@ -19,13 +19,25 @@ export default defineConfig({
         text: '前端',
         items: [
           { text: 'Git', link: '/doc/front/Git' },
-          // { text: 'Uniapp', link: '/doc/front/uniapp总结' }
+          { text: 'Axios', link: '/doc/front/Axios' }
+        ]
+      },
+      {
+        text: '常用的方案的总结',
+        items: [
+          { text: ' token无感刷新', link: '/doc/methods/token无感刷新' },
         ]
       },
       {
         text: 'React',
         items: [
           { text: 'React快速入门', link: '/doc/React/React快速入门' }
+        ]
+      },
+      {
+        text: 'Vue',
+        items: [
+          { text: 'Vue常用的Api', link: '/doc/Vue/Vue常用的Api' }
         ]
       },
       {
