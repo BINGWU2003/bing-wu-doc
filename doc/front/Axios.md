@@ -116,7 +116,7 @@ pnpm install axios-retry
 
 流程图
 
-<img src="https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20240903112637456.png?imageSlim" alt="image-20240903112637456" style="zoom:33%;" />
+<img src="https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20240903113304977.png?imageSlim" alt="image-20240903113304977" style="zoom:33%;" />
 
 基本步骤
 
