@@ -116,7 +116,7 @@ pnpm install axios-retry
 
 流程图
 
-<img src="https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20240903023926458.png?imageSlim" alt="image-20240903023926458" style="zoom:50%;" />
+<img src="https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20240903112119073.png?imageSlim" alt="image-20240903112119073" style="zoom: 50%;" />
 
 基本步骤
 
@@ -170,7 +170,7 @@ pnpm install axios-retry
   
      
 
-代码实践(get请求)
+代码(get请求)
 
 - 接口函数
 
@@ -201,10 +201,9 @@ const getMovieService = async (params, cancelToken) => {
   }
   
   const handleSearch = async () => {
-    // getTableDataRequest有值,请求还没有请求完毕
+    // getTableDataRequest有值,之前发送过一次请求
     if (cancelTokens.getTableDataRequest) {
       cancelTokens.getTableDataRequest.cancel('取消请求')
-      cancelTokens.getTableDataRequest = null
     }
     const movieName = inputValue.value
     const { pageSize, currentPage } = baseTableComRef.value.getPaginationData()
@@ -220,9 +219,7 @@ const getMovieService = async (params, cancelToken) => {
   // 把接口函数getMovieService重新封装了一次
   const getTableData = async (params, cancelToken) => {
     await getMovieService(params, cancelToken)
-      .then((res) => {
-       cancelTokens.getTableDataRequest = null
-    }).catch((err) => {
+      .then((res) => {}).catch((err) => {
         console.log('err', err)
       })
   }
