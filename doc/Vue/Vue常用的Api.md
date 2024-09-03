@@ -74,7 +74,54 @@ const AsyncCom = defineAsyncComponent({
 
 ### 自定义插件
 
+[官方文档](https://cn.vuejs.org/guide/reusability/plugins.html#writing-a-plugin)
 
+1.是什么
+
+插件 (Plugins) 是一种能为 Vue 添加全局功能的工具代码。
+
+2.使用
+
+- 定义一个插件
+
+  `options`是安装插件的时候传入的参数
+
+  ```js
+  const myPlugin = {
+    install(app, options) {
+      // 配置此应用
+       console.log('我的第一个插件', options)
+      // 挂载全局方法或者变量
+      app.config.globalProperties.$bingwu = 'bingwu'
+      console.log('app', app)
+    }
+  }
+  ```
+
+- 安装插件
+
+  传入参数`{ name: 'bingwu' }`
+
+  ```js
+  const app = createApp(App)
+  app.use(myPlugin, { name: 'bingwu' })
+  ```
+
+  控制台输出
+
+  ![image-20240903205921561](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20240903205921561.png?imageSlim)
+
+- 使用挂载的变量/函数
+
+  在模板中使用
+
+  ```vue
+  <template>
+    <div>我是{{ $bingwu }}</div>
+  </template>
+  ```
+
+  `$bingwu`最终会被替换为`'bingwu'`
 
 ### 自定义指令
 
@@ -86,5 +133,44 @@ const AsyncCom = defineAsyncComponent({
 
 2.使用
 
-- 局部
-- 全部
+a.全局
+
+- 定义指令
+
+  通过`app.directive('指令名称',{钩子函数})`来定义指令
+
+  通常在`mounted`和`updated`钩子中处理
+
+  `binding`详细见[文档](https://cn.vuejs.org/guide/reusability/custom-directives#custom-directives)
+
+  `binding.value`(常用)代表在使用指令时传递的参数
+
+  ```js
+  const app = createApp(App)
+  // 自定义指令
+  // 使 v-my 在所有组件中都可用
+  app.directive('my', {
+    // 在mounted钩子中处理
+    mounted(el, binding, vnode) {
+      // dom节点
+      console.log('el', el)
+      // 钩子参数
+      console.log('binding', binding)
+      // 代表绑定元素的底层 VNode。
+      console.log('vnode', vnode)
+    }
+  })
+  ```
+
+- 使用
+
+  `binding.value`的值为`'bingwu'`
+
+  ```vue
+  <template>
+    <div v-my="'bingwu'">我是</div>
+  </template>
+  ```
+
+  ![image-20240903213219315](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20240903213219315.png?imageSlim)
+
