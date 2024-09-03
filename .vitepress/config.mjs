@@ -2,7 +2,7 @@
  * @Author: BINGWU
  * @Date: 2024-05-07 01:18:01
  * @LastEditors: hujiacheng hujiacheng@iipcloud.com
- * @LastEditTime: 2024-09-02 17:34:37
+ * @LastEditTime: 2024-09-03 11:36:02
  * @FilePath: \bing-wu-doc\.vitepress\config.mjs
  * @Describe: 
  * @Mark: ૮(˶ᵔ ᵕ ᵔ˶)ა
@@ -18,14 +18,7 @@ export default defineConfig({
       {
         text: '前端',
         items: [
-          { text: 'Git', link: '/doc/front/Git' },
           { text: 'Axios', link: '/doc/front/Axios' }
-        ]
-      },
-      {
-        text: '常用的方案的总结',
-        items: [
-          { text: ' token无感刷新', link: '/doc/methods/token无感刷新' },
         ]
       },
       {
@@ -57,7 +50,14 @@ export default defineConfig({
           { text: 'PicGo+腾讯COS+Typora搭建图床', link: '/doc/utils-doc/PicGo+腾讯COS+Typora搭建图床' },
           { text: '使用Netlify自动化部署Vitepress', link: '/doc/utils-doc/使用Netlify自动化部署Vitepress' },
           { text: '使用vercel自动化部署express项目', link: '/doc/utils-doc/使用vercel自动化部署express项目' },
-          {text: 'Electron+Vue3的远程打印项目', link: '/doc/utils-doc/Electron+Vue3的远程打印项目'},
+          { text: 'Electron+Vue3的远程打印项目', link: '/doc/utils-doc/Electron+Vue3的远程打印项目' },
+          { text: 'Git', link: '/doc/utils-doc/Git' },
+        ]
+      },
+      {
+        text: '常用的方案的总结',
+        items: [
+          { text: ' token无感刷新', link: '/doc/methods/token无感刷新' },
         ]
       },
     ],
@@ -124,7 +124,7 @@ export default defineConfig({
         timeStyle: 'medium'
       }
     },
-    returnToTopLabel:'返回顶部',
+    returnToTopLabel: '返回顶部',
   },
   head: [["link", { rel: "icon", href: "/logo.svg" }]],
 })
