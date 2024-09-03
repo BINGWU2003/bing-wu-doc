@@ -163,7 +163,7 @@ pnpm install axios-retry
    - delete
   
      ```js
-     axios.get('xxx', {
+     axios.delete('xxx', {
        cancelToken: source.token
      })
      ```
