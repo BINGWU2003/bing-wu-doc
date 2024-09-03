@@ -116,7 +116,7 @@ pnpm install axios-retry
 
 流程图
 
-<img src="https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20240903112119073.png?imageSlim" alt="image-20240903112119073" style="zoom: 50%;" />
+<img src="https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20240903112637456.png?imageSlim" alt="image-20240903112637456" style="zoom:33%;" />
 
 基本步骤
 
@@ -219,7 +219,9 @@ const getMovieService = async (params, cancelToken) => {
   // 把接口函数getMovieService重新封装了一次
   const getTableData = async (params, cancelToken) => {
     await getMovieService(params, cancelToken)
-      .then((res) => {}).catch((err) => {
+      .then((res) => {
+       cancelTokens.getTableDataRequest = null
+    }).catch((err) => {
         console.log('err', err)
       })
   }
