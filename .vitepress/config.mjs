@@ -30,7 +30,8 @@ export default defineConfig({
       {
         text: 'Vue',
         items: [
-          { text: 'Vue常用的Api', link: '/doc/Vue/Vue常用的Api' }
+          { text: 'Vue常用的Api', link: '/doc/Vue/Vue常用的Api' },
+          { text: 'Vue-Router', link: '/doc/Vue/Vue-Router' }
         ]
       },
       {

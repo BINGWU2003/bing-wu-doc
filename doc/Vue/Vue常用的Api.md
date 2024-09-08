@@ -174,3 +174,48 @@ a.全局
 
   ![image-20240903213219315](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20240903213219315.png?imageSlim)
 
+### 自定义hooks
+
+[官方文档](https://cn.vuejs.org/guide/reusability/composables)
+
+1.是什么
+
+利用 Vue 的组合式 API 来封装和复用**有状态逻辑**的函数。
+
+2.使用
+
+- 定义hooks
+
+  函数通常以useXXX来命名
+
+  ```js
+  import { ref, onMounted } from 'vue'
+  export const useAdd = () => {
+    const count = ref(0)
+    const decrease = (num1, num2) => num1 + num2
+    onMounted(() => {
+      console.log('mounted!!!')
+    })
+    return {
+      count,
+      decrease
+    }
+  }
+  ```
+
+- 使用
+
+  ```vue
+  <script setup>
+   // 导入hook
+  import { useAdd } from '../hooks/data'
+  const { count, decrease } = useAdd()
+  </script>
+  
+  <template>
+    <div>{{ count }}</div>
+    <div>{{ decrease(2, 7) }}</div>
+  </template>
+  ```
+
+  

@@ -1,0 +1,91 @@
+## Vue-Router
+
+### 路由传参(params和query)
+
+通过`router`的`push`方法来传参和路由跳转([官方文档](https://router.vuejs.org/zh/guide/essentials/navigation.html))
+
+1. params(参数形式:/about/xxx/bbb)
+
+   - 配置routes
+
+     :xxx -> xxx相当于参数名称    
+
+     **注:如果`routes`配置了参数,但跳转页面没有传入参数会报错**
+
+     ```js
+      routes: [
+         {
+           path: '/about/:id/:name',
+           name: 'about',
+           component: () => import('../views/AboutView.vue')
+         },
+       ]
+     ```
+
+   - 跳转路由并传入参数
+
+     `name`相当于路由名称,要跳转到哪个路由
+
+     `params`传入的参数,`key`是配置routes时的参数名称
+
+     ```js
+     import { useRouter } from 'vue-router'
+     const router = useRouter()
+     const handleClick = () => {
+       router.push({
+         name: 'about',
+         params: {
+           id: 1,
+           name: 'hujiacheng'
+         }
+       })
+     }
+     ```
+
+   - 获取页面参数
+
+     通过`route`来获取
+
+     ```js
+     import { useRoute, useRouter } from 'vue-router'
+     const route = useRoute()
+     console.log(route.params) // {"id": "1", "name": "hujiacheng"}
+     ```
+
+     
+
+2. query参数(参数形式:/about?id=xxx&name=bbb)
+
+   无需配置routes
+
+   - 跳转页面并传入参数
+
+     `name`相当于路由名称,要跳转到哪个路由
+
+     `query`传入的参数,`key`是参数名称
+
+     ```js
+     import { useRouter } from 'vue-router'
+     const router = useRouter()
+     const handleClick = () => {
+       router.push({
+         name: 'about',
+         query: {
+           id: 1,
+           name: 'hujiacheng'
+         }
+       })
+     }
+     ```
+
+    - 获取页面参数
+   
+      通过`route`来获取
+   
+      ```js
+      import { useRoute, useRouter } from 'vue-router'
+      const route = useRoute()
+      console.log(route.query) // {"id": "1","name": "hujiacheng"}
+      ```
+   
+      
