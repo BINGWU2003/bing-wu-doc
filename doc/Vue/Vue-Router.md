@@ -10,8 +10,6 @@
 
      :xxx -> xxx相当于参数名称    
 
-     **注:如果`routes`配置了参数,但跳转页面没有传入参数会报错**
-
      ```js
       routes: [
          {
@@ -21,6 +19,18 @@
          },
        ]
      ```
+
+     注:
+
+     - 如果`routes`没有配置参数,但跳转页面传入参数会给出警告
+
+       `route.params`的输出为空对象
+
+     ![image-20240908150708224](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20240908150708224.png?imageSlim)
+
+     - 如果`routes`配置了参数,但跳转页面没有传入参数会报错
+
+       <img src="https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20240908150956498.png?imageSlim" alt="image-20240908150956498" style="zoom:150%;" />
 
    - 跳转路由并传入参数
 
