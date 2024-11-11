@@ -54,6 +54,12 @@
 
 ![image-20240606224747312](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20240606224747312.png?imageSlim)
 
+### Shadcn
+
+[地址](https://ui.shadcn.com/)
+
+![image-20241112002058890](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20241112002058890.png)
+
 ## 通用
 
 ### uiverse
