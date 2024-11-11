@@ -34,13 +34,13 @@ export default defineConfig({
           { text: 'Vue-Router', link: '/doc/Vue/Vue-Router' }
         ]
       },
-      {
-        text: 'React项目',
-        items: [
-          { text: 'TwitchClone', link: '/doc/React项目/TwitchClone' },
-          { text: 'TwitchCloneVite', link: '/doc/React项目/TwitchCloneVite' }
-        ]
-      },
+      // {
+      //   text: 'React项目',
+      //   items: [
+      //     { text: 'TwitchClone', link: '/doc/React项目/TwitchClone' },
+      //     { text: 'TwitchCloneVite', link: '/doc/React项目/TwitchCloneVite' }
+      //   ]
+      // },
       {
         text: '其他',
         items: [
@@ -51,6 +51,7 @@ export default defineConfig({
           { text: 'PicGo+腾讯COS+Typora搭建图床', link: '/doc/utils-doc/PicGo+腾讯COS+Typora搭建图床' },
           { text: '使用Netlify自动化部署Vitepress', link: '/doc/utils-doc/使用Netlify自动化部署Vitepress' },
           { text: '使用vercel自动化部署express项目', link: '/doc/utils-doc/使用vercel自动化部署express项目' },
+          { text: 'express+ts+sequelize构建服务端', link: '/doc/utils-doc/express+ts+sequelize构建服务端' },
           { text: 'Electron+Vue3的远程打印项目', link: '/doc/utils-doc/Electron+Vue3的远程打印项目' },
           { text: 'Git', link: '/doc/utils-doc/Git' },
         ]
