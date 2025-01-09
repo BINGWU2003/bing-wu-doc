@@ -34,6 +34,12 @@ export default defineConfig({
           { text: 'Vue-Router', link: '/doc/Vue/Vue-Router' }
         ]
       },
+      {
+        text: '阅读笔记',
+        items: [
+          { text: 'Vue设计与实现', link: '/doc/read-notes/Vue设计与实现' },
+        ]
+      },
       // {
       //   text: 'React项目',
       //   items: [
