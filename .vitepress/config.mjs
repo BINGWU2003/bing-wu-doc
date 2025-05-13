@@ -60,6 +60,7 @@ export default defineConfig({
           { text: 'express+ts+sequelize构建服务端', link: '/doc/utils-doc/express+ts+sequelize构建服务端' },
           { text: 'Electron+Vue3的远程打印项目', link: '/doc/utils-doc/Electron+Vue3的远程打印项目' },
           { text: 'Git', link: '/doc/utils-doc/Git' },
+          { text: 'cursor-rules', link: '/doc/utils-doc/cursor-rules' },
         ]
       },
       {
