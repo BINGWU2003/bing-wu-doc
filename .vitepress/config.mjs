@@ -60,7 +60,7 @@ export default defineConfig({
           { text: 'express+ts+sequelize构建服务端', link: '/doc/utils-doc/express+ts+sequelize构建服务端' },
           { text: 'Electron+Vue3的远程打印项目', link: '/doc/utils-doc/Electron+Vue3的远程打印项目' },
           { text: 'Git', link: '/doc/utils-doc/Git' },
-          { text: 'cursor-rules', link: '/doc/utils-doc/cursor-rules' },
+          { text: 'cursor-rules', link: '/doc/utils-doc/cursor-rules' }
         ]
       },
       {
@@ -69,9 +69,16 @@ export default defineConfig({
           { text: ' token无感刷新', link: '/doc/methods/token无感刷新' },
         ]
       },
+      {
+        text: '面试相关',
+        items: [
+          { text: '简历制作', link: '/doc/interview/简历制作' },
+          { text: '面试题目', link: '/doc/interview/面试题目' },
+        ]
+      },
     ],
     footer: {
-      copyright: '版权所有 © 2024 BING WU'
+      copyright: '版权所有 © 2025 BING WU'
     },
     socialLinks: [
       { icon: 'github', link: 'https://github.com/BINGWU2003' },
