@@ -18,7 +18,8 @@ export default defineConfig({
       {
         text: '前端',
         items: [
-          { text: 'Axios', link: '/doc/front/Axios' }
+          { text: 'Axios', link: '/doc/front/Axios' },
+          { text: 'monorepo', link: '/doc/front/monorepo' }
         ]
       },
       {
