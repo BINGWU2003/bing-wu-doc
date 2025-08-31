@@ -30,7 +30,7 @@
 
   表示包所在的目录
 
-  ![image-20250830230627486](C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20250830230627486.png)
+  ![image-20250830230627486](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20250830230627486.png)
 
 - 配置ts和打包
 
@@ -77,7 +77,7 @@
 
   package文件字段解读：[地址](https://juejin.cn/post/7145001740696289317)
   
-  ![image-20250830231615852](C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20250830231615852.png)
+  ![image-20250830231615852](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20250830231615852.png)
 
 ​	`private:true`发布npm包的时候，不发布此包
 
@@ -148,7 +148,7 @@ const entry = resolve(__dirname, `../packages/${target}/src/index.ts`)
 
   其中文件名为包名，每个包都有自己的`package.json`文件，入口文件`index.ts`
 
-![image-20250830233059958](C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20250830233059958.png)
+![image-20250830233059958](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20250830233059958.png)
 
 注意：`package.json`的文件名命名为`@xxx1/xxx2`，其中`xxx1`代表项目名称，`xxx2`代表包名称。例如`@vue/reactivity`
 
@@ -167,7 +167,7 @@ const entry = resolve(__dirname, `../packages/${target}/src/index.ts`)
 
 现在可以在某个包导入`packages`里的其他包
 
-![image-20250830233631927](C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20250830233631927.png)
+![image-20250830233631927](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20250830233631927.png)
 
 如果要在某个里包安装`packages`里的其他包，使用命令行
 
@@ -175,9 +175,9 @@ const entry = resolve(__dirname, `../packages/${target}/src/index.ts`)
 pnpm install @vue/shared --workspace --filter @vue/reactivity
 ```
 
-![image-20250830233937701](C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20250830233937701.png)
+![image-20250830233937701](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20250830233937701.png)
 
-![image-20250830234138741](C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20250830234138741.png)
+![image-20250830234138741](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20250830234138741.png)
 
 `pnpm-workspace`[地址](https://pnpm.io/zh/workspaces)
 
@@ -247,6 +247,6 @@ pnpm install @vue/shared --workspace --filter @vue/reactivity
 
 ​	`dist`为输出目录，里面有输出文件，如果此包依赖`packages`里其他的包，会同时打包进来
 
-<img src="C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20250831000227399.png" alt="image-20250831000227399" style="zoom: 50%;" />
+<img src="https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20250831000227399.png" alt="image-20250831000227399" style="zoom: 50%;" />
 
-![image-20250831000356223](C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20250831000356223.png)
+![image-20250831000356223](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20250831000356223.png)
