@@ -438,6 +438,107 @@ setTimeout(() => {
 
 ```
 
+##### 第三次优化
 
+如果存在下面这种依赖关系，`ok`为`true`，就会显示`text`字段的内容。
 
-​			
+```js
+const data = { ok: true, text: 'hello world' }
+const obj = new Proxy(data, { /* ... */ })
+
+effect(function effectFn() {
+	document.body.innerText = obj.ok ? obj.text : 'not'
+})
+```
+
+依赖关系关系图：
+
+![image-20250908223300183](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20250908223300183.png)
+
+`text`和`ok`的副作用函数`effect`都会在`get`的时候被依赖收集`track`。
+
+现在存在一个问题，如果把`ok`改为`false`，此时派发更新`trigger`，更新`innerText`的值为`not`。但是后续如果修改`text`的值也会触发`trigger`，但是此时的innerText一直是`not`，并不依赖`text`，因此存在遗留的副作用函数。
+
+新增一个`cleanup`函数来清除遗留的副作用函数
+
+在副作用函数执行之前，先清除之前的遗留副作用函数
+
+```js
+// 存储副作用函数的桶
+const bucket = new WeakMap()
+
+// 原始数据
+const data = { ok: true, text: 'hello world' }
+// 对原始数据的代理
+const obj = new Proxy(data, {
+  // 拦截读取操作
+  get(target, key) {
+    // 将副作用函数 activeEffect 添加到存储副作用函数的桶中
+    track(target, key)
+    // 返回属性值
+    return target[key]
+  },
+  // 拦截设置操作
+  set(target, key, newVal) {
+    // 设置属性值
+    target[key] = newVal
+    // 把副作用函数从桶里取出并执行
+    trigger(target, key)
+  }
+})
+
+function track(target, key) {
+  let depsMap = bucket.get(target)
+  if (!depsMap) {
+    bucket.set(target, (depsMap = new Map()))
+  }
+  let deps = depsMap.get(key)
+  if (!deps) {
+    depsMap.set(key, (deps = new Set()))
+  }
+  deps.add(activeEffect)
+  activeEffect.deps.push(deps)
+}
+
+function trigger(target, key) {
+  const depsMap = bucket.get(target)
+  if (!depsMap) return
+  const effects = depsMap.get(key)
+  effects && effects.forEach(effectFn => effectFn())
+}
+
+// 用一个全局变量存储当前激活的 effect 函数
+let activeEffect
+function effect(fn) {
+  const effectFn = () => {
+    cleanup(effectFn)
+    // 当调用 effect 注册副作用函数时，将副作用函数复制给 activeEffect
+    activeEffect = effectFn
+    fn()
+  }
+  // activeEffect.deps 用来存储所有与该副作用函数相关的依赖集合
+  effectFn.deps = []
+  // 执行副作用函数
+  effectFn()
+}
+
+function cleanup(effectFn) {
+  for (let i = 0; i < effectFn.deps.length; i++) {
+    const deps = effectFn.deps[i]
+    deps.delete(effectFn)
+  }
+  effectFn.deps.length = 0
+}
+
+effect(() => {
+  console.log('effect run')
+  document.body.innerText = obj.ok ? obj.text : 'not'
+})
+
+```
+
+依赖收集之后会存在如下关系
+
+![image-20250908233301746](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20250908233301746.png)
+
+给`effectFn`上新增`deps`储存依赖集合，在依赖收集阶段和`activeEffect`构建依赖集合。cleanup函数的参数为副作用函数`effectFn`，在执行副作用函数之前，会清除`activeEffect`中的`deps`里的副作用函数依赖集合。`effectFn.deps.length = 0`清空当前的依赖集合数组。
