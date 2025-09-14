@@ -656,3 +656,95 @@ function trigger(target, key) {
 ```
 
 ![image-20250910232840271](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20250910232840271.png)
+
+##### 第五次优化
+
+`effectFn`嵌套导致依赖收集的副作用函数出现问题
+
+何时出现`effectFn`嵌套？当某个组件内部渲染了另外一个组件
+
+![image-20250914162423763](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20250914162423763.png)
+
+此时相当于：
+
+![image-20250914162459074](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20250914162459074.png)
+
+用如下代码举例：
+
+```js
+// 原始数据
+const data = { foo: true, bar: true }
+// 对原始数据的代理
+const obj = new Proxy(data, {
+// 拦截读取操作
+get(target, key) {
+  // 将副作用函数 activeEffect 添加到存储副作用函数的桶中
+  track(target, key)
+  // 返回属性值
+  return target[key]
+},
+// 拦截设置操作
+set(target, key, newVal) {
+  // 设置属性值
+  target[key] = newVal
+  // 把副作用函数从桶里取出并执行
+  trigger(target, key)
+}
+}) 
+// 省略....
+effect(() => {
+	console.log('effect run1')
+	effect(() => {
+		 console.log('effect run2')
+		 let temp = obj.bar
+	})	
+	let temp = obj.foo
+})
+
+setTimeout(() => {
+	obj.foo = false
+}, 1000)
+```
+
+此时`effect`内部发生了嵌套，此时会导致一个问题，对`obj`的`foo`进行`track`的时候，`foo`的`effectFn`是`effectFn2`，导致如果修改`foo`的值为`true`，执行`effectFn2`。
+
+![image-20250914163304948](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20250914163304948.png)
+
+流程图如下：
+
+![image-20250914164958219](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20250914164958219.png)
+
+优化代码：
+
+使用栈来解决，每次调用副作用函数`effectFn`之前，把函数放入栈`effectStack`中，执行完毕之后再弹出栈，并把栈顶指向`activeEffect`，用于还原之前的值。
+
+流程如下图：
+
+![image-20250914165902303](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20250914165902303.png)
+
+代码：
+
+```js
+// 用一个全局变量存储当前激活的 effect 函数
+let activeEffect
+// effect 栈
+const effectStack = []
+function effect(fn) {
+  const effectFn = () => {
+    cleanup(effectFn)
+    // 当调用 effect 注册副作用函数时，将副作用函数复制给 activeEffect
+    activeEffect = effectFn
+    // 在调用副作用函数之前将当前副作用函数压栈
+    effectStack.push(effectFn)
+    fn()
+    // 在当前副作用函数执行完毕后，将当前副作用函数弹出栈，并还原 activeEffect 为之前的值
+    effectStack.pop()
+    activeEffect = effectStack[effectStack.length - 1]
+  }
+  // activeEffect.deps 用来存储所有与该副作用函数相关的依赖集合
+  effectFn.deps = []
+  // 执行副作用函数
+  effectFn()
+}
+```
+
