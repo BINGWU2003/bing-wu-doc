@@ -748,3 +748,54 @@ function effect(fn) {
 }
 ```
 
+##### 第六次优化
+
+避免无限递归循环
+
+如果副作用函数如下：
+
+```js
+effect(() => {
+	obj.foo++  // obj.foo = obj.foo + 1
+})
+```
+
+执行流程图如下：
+
+![image-20250914220836859](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20250914220836859.png)
+
+当`trigger`的时候，执行副作用函数，此时`effectsToRun.forEach(effectFn => effectFn())`还没有执行完毕，执行副作用函数的时候又进行`track`和`trigger`导致无限循环。
+
+```js
+function trigger(target, key) {
+  const depsMap = bucket.get(target)
+  if (!depsMap) return
+  const effects = depsMap.get(key)
+
+  const effectsToRun = new Set()
+  effects && effects.forEach(effectFn => effectsToRun.add(effectFn))
+  effectsToRun.forEach(effectFn => effectFn())
+}
+```
+
+解决方法：
+
+```js
+function trigger(target, key) {
+  const depsMap = bucket.get(target)
+  if (!depsMap) return
+  const effects = depsMap.get(key)
+
+  const effectsToRun = new Set()
+  effects && effects.forEach(effectFn => {
+    // 如果当前执行的副作用函数和trigger的副作用函数一样，则不执行
+    if (effectFn !== activeEffect) {
+      effectsToRun.add(effectFn) 
+    }
+  })
+  effectsToRun.forEach(effectFn => effectFn())
+}
+```
+
+##### 第七次优化
+
