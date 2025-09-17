@@ -960,3 +960,293 @@ obj.foo++
 
 ![image-20250917170439464](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20250917170439464.png)
 
+#### computed
+
+##### effectFn懒执行
+
+`options`新增配置项`lazy`（`lazy`为`true`就立即执行`effectFn`），`effect`里返回`effectFn`（用于手动执行副作用函数`effectFn`），`effectFn`里返回`fn`函数执行后的返回值。
+
+现在实现一个简单的`computed`，`getter`返回一个函数，函数返回值依赖其他的值，当读取对象`obj`的值的时候触发`get`，执行`effectFn`
+
+```js
+  // 存储副作用函数的桶
+  const bucket = new WeakMap()
+
+  // 原始数据
+  const data = { foo: 1, bar: 2 }
+  // 对原始数据的代理
+  const obj = new Proxy(data, {
+    // 拦截读取操作
+    get(target, key) {
+      // 将副作用函数 activeEffect 添加到存储副作用函数的桶中
+      track(target, key)
+      // 返回属性值
+      return target[key]
+    },
+    // 拦截设置操作
+    set(target, key, newVal) {
+      // 设置属性值
+      target[key] = newVal
+      // 把副作用函数从桶里取出并执行
+      trigger(target, key)
+    }
+  })
+
+  function track(target, key) {
+    if (!activeEffect) return
+    let depsMap = bucket.get(target)
+    if (!depsMap) {
+      bucket.set(target, (depsMap = new Map()))
+    }
+    let deps = depsMap.get(key)
+    if (!deps) {
+      depsMap.set(key, (deps = new Set()))
+    }
+    deps.add(activeEffect)
+    activeEffect.deps.push(deps)
+  }
+
+  function trigger(target, key) {
+    const depsMap = bucket.get(target)
+    if (!depsMap) return
+    const effects = depsMap.get(key)
+
+    const effectsToRun = new Set()
+    effects && effects.forEach(effectFn => {
+      if (effectFn !== activeEffect) {
+        effectsToRun.add(effectFn)
+      }
+    })
+    effectsToRun.forEach(effectFn => {
+      if (effectFn.options.scheduler) {
+        effectFn.options.scheduler(effectFn)
+      } else {
+        effectFn()
+      }
+    })
+  }
+
+  // 用一个全局变量存储当前激活的 effect 函数
+  let activeEffect
+  // effect 栈
+  const effectStack = []
+
+  function effect(fn, options = {}) {
+    const effectFn = () => {
+      cleanup(effectFn)
+      // 当调用 effect 注册副作用函数时，将副作用函数复制给 activeEffect
+      activeEffect = effectFn
+      // 在调用副作用函数之前将当前副作用函数压栈
+      effectStack.push(effectFn)
+      const res = fn()
+      // 在当前副作用函数执行完毕后，将当前副作用函数弹出栈，并还原 activeEffect 为之前的值
+      effectStack.pop()
+      activeEffect = effectStack[effectStack.length - 1]
+
+      return res
+    }
+    // 将 options 挂在到 effectFn 上
+    effectFn.options = options
+    // activeEffect.deps 用来存储所有与该副作用函数相关的依赖集合
+    effectFn.deps = []
+    // 执行副作用函数
+    if (!options.lazy) {
+      effectFn()
+    }
+
+    return effectFn
+  }
+
+  function cleanup(effectFn) {
+    for (let i = 0; i < effectFn.deps.length; i++) {
+      const deps = effectFn.deps[i]
+      deps.delete(effectFn)
+    }
+    effectFn.deps.length = 0
+  }
+  // =========================
+  function computed(getter) {
+    const effectFn = effect(getter, {
+      lazy: true
+    })
+    const obj = {
+      get value() {
+        return effectFn()
+      }
+    }
+    return obj
+  }
+  const sumRes = computed(() => obj.foo + obj.bar)
+  console.log(sumRes.value)
+  console.log(sumRes.value)
+```
+
+##### computed懒执行
+
+现在存在一个问题，当我连续读取`sumRes.value`，会连续多次执行`effectFn`，但如果这个时候依赖项`obj.foo`和`obj.bar`没有变化，但也多次执行`effectFn`，并没有缓存效果。这个时候可以新增一个变量`dirty`来标志是否需要重新计算值，如果`dirty`为`true`，执行`effectFn`。如果`dirty`为`false`则不执行，并重置`dirty`为`true`。如果依赖项`obj.foo`和`obj.bar`发生了变化，`dirty`重置为`true`，这个时候需要去执行`effectFn`，获取最新的值，可以通过在`options`里配置`scheduler`来重置`dirty`为`true`。
+
+```js
+  // 存储副作用函数的桶
+  const bucket = new WeakMap()
+
+  // 原始数据
+  const data = { foo: 1, bar: 2 }
+  // 对原始数据的代理
+  const obj = new Proxy(data, {
+    // 拦截读取操作
+    get(target, key) {
+      // 将副作用函数 activeEffect 添加到存储副作用函数的桶中
+      track(target, key)
+      // 返回属性值
+      return target[key]
+    },
+    // 拦截设置操作
+    set(target, key, newVal) {
+      // 设置属性值
+      target[key] = newVal
+      // 把副作用函数从桶里取出并执行
+      trigger(target, key)
+    }
+  })
+
+  function track(target, key) {
+    if (!activeEffect) return
+    let depsMap = bucket.get(target)
+    if (!depsMap) {
+      bucket.set(target, (depsMap = new Map()))
+    }
+    let deps = depsMap.get(key)
+    if (!deps) {
+      depsMap.set(key, (deps = new Set()))
+    }
+    deps.add(activeEffect)
+    activeEffect.deps.push(deps)
+  }
+
+  function trigger(target, key) {
+    const depsMap = bucket.get(target)
+    if (!depsMap) return
+    const effects = depsMap.get(key)
+
+    const effectsToRun = new Set()
+    effects && effects.forEach(effectFn => {
+      if (effectFn !== activeEffect) {
+        effectsToRun.add(effectFn)
+      }
+    })
+    effectsToRun.forEach(effectFn => {
+      if (effectFn.options.scheduler) {
+        effectFn.options.scheduler(effectFn)
+      } else {
+        effectFn()
+      }
+    })
+  }
+
+  // 用一个全局变量存储当前激活的 effect 函数
+  let activeEffect
+  // effect 栈
+  const effectStack = []
+
+  function effect(fn, options = {}) {
+    const effectFn = () => {
+      cleanup(effectFn)
+      // 当调用 effect 注册副作用函数时，将副作用函数复制给 activeEffect
+      activeEffect = effectFn
+      // 在调用副作用函数之前将当前副作用函数压栈
+      effectStack.push(effectFn)
+      const res = fn()
+      // 在当前副作用函数执行完毕后，将当前副作用函数弹出栈，并还原 activeEffect 为之前的值
+      effectStack.pop()
+      activeEffect = effectStack[effectStack.length - 1]
+
+      return res
+    }
+    // 将 options 挂在到 effectFn 上
+    effectFn.options = options
+    // activeEffect.deps 用来存储所有与该副作用函数相关的依赖集合
+    effectFn.deps = []
+    // 执行副作用函数
+    if (!options.lazy) {
+      effectFn()
+    }
+
+    return effectFn
+  }
+
+  function cleanup(effectFn) {
+    for (let i = 0; i < effectFn.deps.length; i++) {
+      const deps = effectFn.deps[i]
+      deps.delete(effectFn)
+    }
+    effectFn.deps.length = 0
+  }
+  // =========================
+  function computed(getter) {
+    let dirty = true
+    let value
+    const effectFn = effect(getter, {
+      lazy: true,
+      scheduler(){
+          dirty = true
+      }
+    })
+    const obj = {
+      get value() {
+        if(dirty) {
+            value = effectFn()
+            dirty = false
+        }
+        return value
+      }
+    }
+    return obj
+  }
+  const sumRes = computed(() => obj.foo + obj.bar)
+  console.log(sumRes.value)
+  console.log(sumRes.value)
+
+  obj.foo++
+  console.log(sumRes.value)
+```
+
+流程如下：
+
+![image-20250917232301442](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20250917232301442.png)
+
+`track`依赖收集的时候，`activeEffect`此时已被赋值为`effectFn`，副作用函数是`effectFn`，函数内部的`fn`是`getter`，`options`的配置是计算属性的参数配置，如下：
+
+```js
+{
+      lazy: true,
+      scheduler(){
+          dirty = true
+      }
+ }
+```
+
+当执行`trigger`，会执行`scheduler`来重置`dirty`
+
+```js
+function trigger(target, key) {
+    const depsMap = bucket.get(target)
+    if (!depsMap) return
+    const effects = depsMap.get(key)
+
+    const effectsToRun = new Set()
+    effects && effects.forEach(effectFn => {
+      if (effectFn !== activeEffect) {
+        effectsToRun.add(effectFn)
+      }
+    })
+    effectsToRun.forEach(effectFn => {
+      if (effectFn.options.scheduler) {
+        // 执行
+        effectFn.options.scheduler(effectFn)
+      } else {
+        effectFn()
+      }
+    })
+  }
+```
+
