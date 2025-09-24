@@ -7,9 +7,10 @@
  * @Describe: 
  * @Mark: ૮(˶ᵔ ᵕ ᵔ˶)ა
  */
-import { defineConfig } from 'vitepress'
+// import { defineConfig } from 'vitepress'
+import { withMermaid } from 'vitepress-plugin-mermaid'
 // https://vitepress.dev/reference/site-config
-export default defineConfig({
+export default withMermaid({
   title: "BING WU的个人文档",
   description: "BINGWU VitePress Site",
   themeConfig: {
@@ -144,4 +145,6 @@ export default defineConfig({
     returnToTopLabel: '返回顶部',
   },
   head: [["link", { rel: "icon", href: "/logo.svg" }]],
+  mermaid: { theme: 'forest' },
+  mermaidPlugin: { class: 'mermaid my-class' }
 })
