@@ -1432,3 +1432,310 @@ obj.foo++
 4  // 第二次打印 2 + 2
 ```
 
+#### watch
+
+[wacth文档](https://cn.vuejs.org/api/reactivity-core.html#watch)
+
+`watch`相比`computed`，函数的参数不一样，`watch`的参数可能为对象也可能为一个函数`getter`，如果为对象，需要遍历读取这个对象，把对象上的所有key都`track`，因此通过`traverse`函数来遍历读取对象的所有属性。
+
+`traverse`的实现：
+
+递归来遍历对象，对象里面可能会嵌套对象。
+
+```js
+function traverse(value, seen = new Set()) {
+  if (typeof value !== 'object' || value === null || seen.has(value)) return
+  seen.add(value)
+  for (const k in value) {
+    traverse(value[k], seen)
+  }
+  return value
+}
+```
+
+`wacth`可以立即执行，配置`options.immediate = true`，相当于立即执行`job()`，此时的`oldValue = undefined`，`newValue = effectFn()`，其中`effectFn()`为该函数首次运行的值。配置`options.immediate = false`，不会立即执行（并且`{ lazy: true }`），但是为了触发依赖收集`track`，必须执行`oldValue = effectFn`。
+
+配置`options.immediate = false`的执行流程：
+
+```mermaid
+graph TD
+    A["watch(source, cb) 启动"] --> B{"options.immediate 是否为 true?"};
+    B -->|"否 (进入 else 块)"| C["执行 oldValue = effectFn()"];
+    
+    subgraph C ["执行 oldValue = effectFn()"]
+        direction LR
+        C1["设置 activeEffect"] --> C2["执行 getter, 读取初始值, 如 obj.foo=1"];
+        C2 --> C3["触发 Proxy.get, 调用 track()"];
+        C3 --> C4["<b>依赖收集完成</b><br>将 effectFn 与 obj.foo 关联"];
+        C4 --> C5["getter 返回初始值 1"];
+    end
+
+    C --> D["oldValue 被赋值为 1"];
+    D --> E["监听设置完成, 等待变更...<br>此时回调 cb() 未执行"];
+    
+    E --> F["...一段时间后...<br>用户代码执行 obj.foo++"];
+    
+    F --> G["触发 Proxy.set, 调用 trigger()"];
+    G --> H["trigger 找到依赖, 执行 scheduler"];
+    H --> I["scheduler 调用 job()"];
+    
+    subgraph I ["job() 执行"]
+        direction LR
+        I1["newValue = effectFn()<br>获取新值 2"] --> I2["执行回调 cb(newValue, oldValue)<br>即 <b>cb(2, 1)</b>"];
+        I2 --> I3["更新 oldValue = newValue<br>oldValue 现在是 2"];
+    end
+    
+    I --> J["执行完毕"];
+```
+
+代码实现：
+
+```js
+function watch(source, cb, options = {}) {
+  let getter
+  if (typeof source === 'function') {
+    getter = source
+  } else {
+    getter = () => traverse(source)
+  }
+
+  let oldValue, newValue
+
+  const job = () => {
+    newValue = effectFn()
+    cb(oldValue, newValue)
+    oldValue = newValue
+  }
+
+  const effectFn = effect(
+    // 执行 getter
+    () => getter(),
+    {
+      lazy: true,
+      scheduler: () => {
+        if (options.flush === 'post') {
+          const p = Promise.resolve()
+          p.then(job)
+        } else {
+          job()
+        }
+      }
+    }
+  )
+  
+  if (options.immediate) {
+    job()
+  } else {
+    oldValue = effectFn()
+  }
+}
+```
+
+`watch`的`flush`配置，如果`options.flush === 'post'`，把`job`放入到微任务队列。来确保执行之前`DOM`的更新已经完成，获取到最新的`DOM`状态
+
+流程图如下：
+
+```	mermaid
+graph TD
+    A["数据变更触发 scheduler"] --> B{"options.flush === 'post'?"};
+
+    B -->|是| C["创建已解决的 Promise (p = Promise.resolve())"];
+    C --> D["将 job() 添加到微任务队列 (p.then(job))"];
+    D --> E["当前宏任务继续执行<br>(等待微任务队列清空)"];
+    E --> F["当所有同步代码执行完毕，且 DOM 更新完成（若有）"];
+    F --> G["执行 job()"];
+
+    B -->|"否 (默认或 'pre'/'sync')"| H["同步执行 job()"];
+    H --> I["job() 执行完毕"];
+    I --> J["当前宏任务继续执行"];
+
+    G --> K["job() 异步执行完毕"];
+    K --> L["当前事件循环迭代结束"];
+```
+
+代码实现：
+
+```js
+const effectFn = effect(
+    // 执行 getter
+    () => getter(),
+    {
+      lazy: true,
+      scheduler: () => {
+        if (options.flush === 'post') {
+          const p = Promise.resolve()
+          p.then(job)
+        } else {
+          job()
+        }
+      }
+    }
+  )
+```
+
+最终代码实现：
+
+```js
+// 存储副作用函数的桶
+const bucket = new WeakMap()
+
+// 原始数据
+const data = { foo: 1, bar: 2 }
+// 对原始数据的代理
+const obj = new Proxy(data, {
+  // 拦截读取操作
+  get(target, key) {
+    // 将副作用函数 activeEffect 添加到存储副作用函数的桶中
+    track(target, key)
+    // 返回属性值
+    return target[key]
+  },
+  // 拦截设置操作
+  set(target, key, newVal) {
+    // 设置属性值
+    target[key] = newVal
+    // 把副作用函数从桶里取出并执行
+    trigger(target, key)
+  }
+})
+
+function track(target, key) {
+  if (!activeEffect) return
+  let depsMap = bucket.get(target)
+  if (!depsMap) {
+    bucket.set(target, (depsMap = new Map()))
+  }
+  let deps = depsMap.get(key)
+  if (!deps) {
+    depsMap.set(key, (deps = new Set()))
+  }
+  deps.add(activeEffect)
+  activeEffect.deps.push(deps)
+}
+
+function trigger(target, key) {
+  const depsMap = bucket.get(target)
+  if (!depsMap) return
+  const effects = depsMap.get(key)
+
+  const effectsToRun = new Set()
+  effects && effects.forEach(effectFn => {
+    if (effectFn !== activeEffect) {
+      effectsToRun.add(effectFn)
+    }
+  })
+  effectsToRun.forEach(effectFn => {
+    if (effectFn.options.scheduler) {
+      effectFn.options.scheduler(effectFn)
+    } else {
+      effectFn()
+    }
+  })
+  // effects && effects.forEach(effectFn => effectFn())
+}
+
+// 用一个全局变量存储当前激活的 effect 函数
+let activeEffect
+// effect 栈
+const effectStack = []
+
+function effect(fn, options = {}) {
+  const effectFn = () => {
+    cleanup(effectFn)
+    // 当调用 effect 注册副作用函数时，将副作用函数复制给 activeEffect
+    activeEffect = effectFn
+    // 在调用副作用函数之前将当前副作用函数压栈
+    effectStack.push(effectFn)
+    const res = fn()
+    // 在当前副作用函数执行完毕后，将当前副作用函数弹出栈，并还原 activeEffect 为之前的值
+    effectStack.pop()
+    activeEffect = effectStack[effectStack.length - 1]
+
+    return res
+  }
+  // 将 options 挂在到 effectFn 上
+  effectFn.options = options
+  // activeEffect.deps 用来存储所有与该副作用函数相关的依赖集合
+  effectFn.deps = []
+  // 执行副作用函数
+  if (!options.lazy) {
+    effectFn()
+  }
+
+  return effectFn
+}
+
+function cleanup(effectFn) {
+  for (let i = 0; i < effectFn.deps.length; i++) {
+    const deps = effectFn.deps[i]
+    deps.delete(effectFn)
+  }
+  effectFn.deps.length = 0
+}
+
+
+
+
+// =========================
+
+function traverse(value, seen = new Set()) {
+  if (typeof value !== 'object' || value === null || seen.has(value)) return
+  seen.add(value)
+  for (const k in value) {
+    traverse(value[k], seen)
+  }
+
+  return value
+}
+
+function watch(source, cb, options = {}) {
+  let getter
+  if (typeof source === 'function') {
+    getter = source
+  } else {
+    getter = () => traverse(source)
+  }
+
+  let oldValue, newValue
+
+  const job = () => {
+    newValue = effectFn()
+    cb(oldValue, newValue)
+    oldValue = newValue
+  }
+
+  const effectFn = effect(
+    // 执行 getter
+    () => getter(),
+    {
+      lazy: true,
+      scheduler: () => {
+        if (options.flush === 'post') {
+          const p = Promise.resolve()
+          p.then(job)
+        } else {
+          job()
+        }
+      }
+    }
+  )
+  
+  if (options.immediate) {
+    job()
+  } else {
+    oldValue = effectFn()
+  }
+}
+
+watch(() => obj.foo, (newVal, oldVal) => {
+  console.log(newVal, oldVal)
+}, {
+  immediate: true,
+  flush: 'post'
+})
+
+setTimeout(() => {
+  obj.foo++
+}, 1000)
+```
+
