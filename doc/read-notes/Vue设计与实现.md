@@ -459,6 +459,44 @@ effect(function effectFn() {
 
 现在存在一个问题，如果把`ok`改为`false`，此时派发更新`trigger`，更新`innerText`的值为`not`。但是后续如果修改`text`的值也会触发`trigger`，但是此时的innerText一直是`not`，并不依赖`text`，因此存在遗留的副作用函数。
 
+```mermaid
+graph TD
+    subgraph "A. 首次执行 (当 obj.ok 为 true)"
+        A1["首次执行 effectFn"] --> A2["(跳过) <b>没有 cleanup 阶段</b>"];
+        A2 --> A3["执行用户函数 fn<br>obj.ok ? obj.text : 'not ok'"];
+        A3 --> A4["读取 obj.ok (true) 和 obj.text"];
+        A4 --> A5["通过 track() 建立依赖关系"];
+        A5 --> A6["<b>当前依赖: {obj.ok, obj.text}</b><br>此时依赖是正确的"];
+    end
+
+    A6 --> B1["...一段时间后...<br>用户代码执行 <b>obj.ok = false</b>"];
+    B1 --> B2["trigger() 触发 effectFn 重新执行"];
+
+    subgraph "B. 第二次执行 (当 obj.ok 为 false)"
+        B2 --> C1["effectFn 开始重新执行"];
+        C1 --> C2["(跳过) <b>没有 cleanup 阶段</b>"];
+        C2 --> C3["执行用户函数 fn<br>obj.ok ? obj.text : 'not ok'"];
+        C3 --> C4["只读取 obj.ok (false)"];
+        C4 --> C5["通过 track() 重新建立对 obj.ok 的依赖"];
+        C5 --> C6["<b>执行结束<br>但对 obj.text 的旧依赖从未被清除</b>"];
+    end
+
+    C6 --> D1["<b style='color:red;'>错误状态: 当前依赖仍为 {obj.ok, obj.text}</b><br>但逻辑上应只依赖 obj.ok"];
+
+    subgraph "C. 错误的后果"
+        D1 --> E1["...又过了一段时间...<br>用户执行了逻辑上无关的操作:<br><b>obj.text = 'new message'</b>"];
+        E1 --> E2["调用 trigger(obj, 'text')"];
+        E2 --> E3["trigger 在 obj.text 的依赖集合中<br>找到了那个从未被清除的'僵尸依赖' (effectFn)"];
+        E3 --> E4["<b>不必要地重新执行了 effectFn !</b>"];
+    end
+
+    %% 样式
+    style A2 fill:red,stroke:#333,stroke-width:2px
+    style C2 fill:red,stroke:#333,stroke-width:2px
+    style D1 fill:#f99,stroke:#b00,stroke-width:4px
+    style E4 fill:#f99,stroke:#b00,stroke-width:4px
+```
+
 新增一个`cleanup`函数来清除遗留的副作用函数
 
 在副作用函数执行之前，先清除之前的遗留副作用函数
@@ -537,11 +575,97 @@ effect(() => {
 
 ```
 
+`cleanup`执行流程图：
+
+```mermaid
+graph TD
+    A["开始"] --> State0;
+
+    subgraph "第 0 阶段: 初始状态"
+        State0("<b>数据初始状态</b><br>bucket: { }<br>effectFn.deps: [ ]")
+    end
+
+    State0 --> B;
+
+    subgraph "第 1 阶段: 首次执行 effect (当 obj.ok=true)"
+        B["执行 effect(fn)<br>fn = obj.ok ? obj.text : '...'"];
+        B --> C["fn 执行, 读取 obj.ok 和 obj.text<br>两次调用 track() 来建立依赖"];
+        C --> State1("<b>数据状态 (首次执行后)</b><br>bucket: { obj: {'ok':Set{e}, 'text':Set{e}} }<br>effectFn.deps: [ ref_to_ok_Set, ref_to_text_Set ]");
+    end
+
+    State1 --> D;
+
+    subgraph "第 2 阶段: 数据变更"
+        D["用户操作: <b>obj.ok = false</b>"];
+        D --> E["trigger() 触发 effectFn 重新执行"];
+    end
+
+    E --> F;
+
+    subgraph "第 3 & 4 阶段: cleanup 与第二次执行"
+        F["<b>cleanup(effectFn) 运行</b><br>遍历 effectFn.deps, 断开旧连接"];
+        F --> State2("<b>数据状态 (清理后, 执行前)</b><br>bucket: { obj: {'ok':Set{}, 'text':Set{}} }<br>effectFn.deps: [ ]");
+        State2 --> G["<b>effectFn 的 fn 再次运行</b>"];
+        G --> H["fn 执行, 只读取 obj.ok<br>只调用一次 track()"];
+    end
+    
+    H --> State3;
+
+    subgraph "第 5 阶段: 最终状态"
+        State3("<b>最终数据状态 (第二次执行后)</b><br>bucket: { obj: {'ok':Set{e}, 'text':Set{}} }<br>effectFn.deps: [ ref_to_ok_Set ]");
+    end
+
+    State3 --> I["结束"];
+```
+
 依赖收集之后会存在如下关系
 
 ![image-20250908233301746](https://bing-wu-doc-1318477772.cos.ap-nanjing.myqcloud.com/typora/image-20250908233301746.png)
 
 给`effectFn`上新增`deps`储存依赖集合，在依赖收集阶段和`activeEffect`构建依赖集合。cleanup函数的参数为副作用函数`effectFn`，在执行副作用函数之前，会清除`activeEffect`中的`deps`里的副作用函数依赖集合。`effectFn.deps.length = 0`清空当前的依赖集合数组。
+
+整个执行流程：
+
+```mermaid
+graph TD
+    subgraph "A. 外部触发"
+        A1["数据变更 (例如 obj.ok = false)"] --> A2["调用 trigger()"]
+        A2 --> A3["trigger 找到依赖的 effectFn<br>并准备执行它"]
+    end
+
+    A3 --> B["effectFn 开始重新执行"]
+
+    subgraph "B. 清理阶段 (cleanup)"
+        direction TB
+        B --> C["<b>第一步: 执行 cleanup(effectFn)</b>"];
+        C --> D{"effectFn.deps 中是否有旧的依赖?"};
+        D -->|"是 (对于后续执行)"| E["遍历 effectFn.deps 数组"];
+        E --> F["对于每一个依赖集合 (deps)<br>执行 deps.delete(effectFn)"];
+        F --> G["将 effectFn 从所有旧依赖中移除<br><b>(断开旧连接)</b>"];
+        G --> H["清空 effectFn.deps 数组"];
+        H --> I["清理完成<br>effectFn 处于'干净'状态"];
+        D -->|"否 (对于首次执行)"| I;
+    end
+
+    subgraph "C. 执行与重建依赖阶段"
+        direction TB
+        I --> J["<b>第二步: 执行用户传入的函数 fn</b><br>例如: obj.ok ? obj.text : 'not ok'"];
+        J --> K["读取 obj.ok, 触发 track()"];
+        K --> K_sub["(建立对 obj.ok 的新依赖)"];
+
+        K_sub --> L{"obj.ok 的值是 true 吗?"};
+        L -->|是| M["读取 obj.text, 触发 track()"];
+        M --> M_sub["(建立对 obj.text 的新依赖)"];
+        M_sub --> N["执行结束"];
+
+        L -->|否| O["不读取 obj.text, 直接使用 'not ok'"];
+        O --> N;
+    end
+
+    N --> P["<b>effectFn 执行完毕<br>依赖关系已精确重建</b>"]
+```
+
+
 
 ##### 第四次优化
 
